@@ -98,6 +98,9 @@ function readSession(sessionId, cb)
             
             return '';  // return an empty string
         } // if
+        
+        Sample session record
+        | sgo3vosp1ej150sln9cvdslqm0 | 736     | 2016-06-09 16:04:03 | 2016-06-26 16:40:54 | view-count|i:1;logged-user|i:736;user-ip|s:15:"128.199.221.111";layer-group-user|s:0:"";authenticated-layer|s:3:"181";temp-user-name|s:7:"Anon 11";lat|i:51;lon|i:0; 
         */
         var keyValues = {};
         
@@ -108,8 +111,9 @@ function readSession(sessionId, cb)
         	
         	if((rows[0])&&(rows[0].session_data)) {
         		var params = rows[0].session_data.split(";");
-				foreach(params as param) {
-					var paramData = param.split("|");
+				for(var cnt=0; cnt< params.length; cnt++) {
+				
+					var paramData = params[cnt].split("|");
 					if(paramData[1]) {
 						//There is some data about this param
 						var paramValues = paramData[1].split(":");
