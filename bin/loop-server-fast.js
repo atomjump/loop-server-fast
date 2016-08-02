@@ -388,11 +388,12 @@ function searchProcess(params, cb) {
 				   	
 
   
-				  connection.end();
+				  //connection.end();
 				});
 			}
 		} else {
 			//Not logged in - TODO will have to revert back to the PHP version
+			cb("Not logged in", null);
 		
 		}
 	
