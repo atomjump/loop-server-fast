@@ -120,6 +120,7 @@ function readSession(sessionId, cb)
 						var paramValue = paramValues[2];
 						
 						keyValues[paramData[0]] = paramValue;
+						console.log("Key:" + paramData[0] + " = " + paramValue);
 					} 		
 				}
 			}
