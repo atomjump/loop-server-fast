@@ -42,7 +42,7 @@ var serverOptions = {};				//default https server options (see nodejs https modu
 var listenPort = 3277;				//default listen port
 
 
-if(process.argv[2]){
+if((process.argv)&&(process.argv[2])){
   var loopServerConfig = process.argv[2];
 } else {
   
