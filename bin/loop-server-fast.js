@@ -117,7 +117,13 @@ function readSession(sessionId, cb)
 					if(paramData[1]) {
 						//There is some data about this param
 						var paramValues = paramData[1].split(":");
-						var paramValue = paramValues[2];
+						if(paramValues[0] == 'i') {
+							//An integer - value proceeds
+							var paramValue = paramValues[1];
+						} else {
+							//A string, [1] is the string length, [2] is the string itself
+							var paramValue = paramValues[2];
+						}
 						
 						keyValues[paramData[0]] = paramValue;
 						console.log("Key:" + paramData[0] + " = " + paramValue);
