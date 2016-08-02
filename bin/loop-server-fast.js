@@ -78,6 +78,22 @@ function cleanData(str)
 	return str;
 }
 
+
+function trimChar(string, charToRemove) {
+    while(string.substring(0,1)==charToRemove) {
+        string = string.substring(1);
+    }
+
+    while(string.substring(string.length, -1)==charToRemove) {
+        string = string.substring(0,string.length-1);
+    }
+
+    return string;
+}
+
+
+
+
 function readSession(sessionId, cb)
 {
 	
@@ -122,7 +138,7 @@ function readSession(sessionId, cb)
 							var paramValue = paramValues[1];
 						} else {
 							//A string, [1] is the string length, [2] is the string itself
-							var paramValue = paramValues[2];
+							var paramValue = trimChar(paramValues[2], "\"");
 						}
 						
 						keyValues[paramData[0]] = paramValue;
