@@ -119,7 +119,7 @@ function readSession(sessionId, cb)
 						var paramValues = paramData[1].split(":");
 						var paramValue = paramValues[2];
 						
-						keyValues.paramData[0] = paramValue;
+						keyValues[paramData[0]] = paramValue;
 					} 		
 				}
 			}
