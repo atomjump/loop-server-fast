@@ -72,7 +72,7 @@ if(cnf.httpsKey) {
 	//httpsKey should point to the key .pem file
 	httpsFlag = true;
 	if(!serverOptions.key) {
-		serverOptions.key = fs.readFileSync(content.httpsKey);
+		serverOptions.key = fs.readFileSync(cnf.httpsKey);
 		console.log("https key loaded");
 	}
  }
@@ -81,7 +81,7 @@ if(cnf.httpsKey) {
 	//httpsCert should point to the cert .pem file
 	httpsFlag = true;
 	if(!serverOptions.cert) {
-		serverOptions.cert = fs.readFileSync(content.httpsCert);
+		serverOptions.cert = fs.readFileSync(cnf.httpsCert);
 		console.log("https cert loaded");
 	}
 	
