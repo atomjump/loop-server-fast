@@ -35,11 +35,12 @@ var shredfile = require('shredfile')();
 var async = require('async');
 var mysql = require('mysql');
 var os = require('os');
+const querystring = require('querystring');
 
 
 var httpsFlag = false;				//whether we are serving up https (= true) or http (= false)
 var serverOptions = {};				//default https server options (see nodejs https module)
-var listenPort = 3277;				//default listen port
+var listenPort = 3277;				//default listen port. Will get from the config readPort if it is set there
 
 
 if((process.argv)&&(process.argv[2])){
@@ -59,6 +60,11 @@ if((process.argv[3]) && (process.argv[3] == '-production')){
   var cnf = config.production;
 } else {
   var cnf = config.staging;
+}
+
+//Use the port specified in the config
+if(cnf.readPort) {
+	listenPort = cnf.readPort;
 }
  
 
