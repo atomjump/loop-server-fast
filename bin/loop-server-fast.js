@@ -105,7 +105,7 @@ function readSession(sessionId, cb)
         var keyValues = {};
         
         
-        connection.query("SELECT * FROM php_session WHERE session_id=" + cleanData(sessionId), function(err, rows, fields) {
+        connection.query("SELECT * FROM php_session WHERE session_id='" + cleanData(sessionId) + "'", function(err, rows, fields) {
         	
         	if (err) throw err;
         	
