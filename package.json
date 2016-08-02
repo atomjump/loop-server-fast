@@ -1,0 +1,43 @@
+{
+  "author": "AtomJump.com",
+  "name": "loop-server-fast",
+  "description": "A faster NodeJS reader to complement the AtomJump Loop Server.",
+  "version": "0.0.1",
+  "bin": {
+    "loop-server-fast": "loop-server-fast.js"
+  },
+  "preferGlobal": "true",
+  "scripts": {
+    "start": "",
+    "stop": "",
+    "postinstall": ""
+  },
+  "dependencies": {
+    "connect": "*",
+    "date-format-lite": "*",
+    "drivelist": "*",
+    "express": "*",
+    "fs-extra": "*",
+    "https": "*",
+    "image-type": "^2.1.0",
+    "mkdirp": "*",
+    "multer": "*",
+    "multiparty": "*",
+    "mv": "*",
+    "needle": "*",
+    "node-mv": "*",
+    "node-uuid": "*",
+    "path": "*",
+    "read-chunk": "^2.0.0",
+    "request": "*",
+    "shredfile": "^0.2.0",
+    "upath": "*",
+    "mysql": "~2.8.0",
+    "async": "~1.4.2"
+  },
+  "main": "bin/loop-server-fast.js",
+  "optionalDependencies": {},
+  "engines": {
+    "node": ">=4.4"
+  }
+}
