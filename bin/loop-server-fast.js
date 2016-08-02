@@ -202,7 +202,7 @@ function handleServer(_req, _res) {
 		var cookies = parseCookies(req);
 		params.sessionId = cookies.ses;		//This is our custom cookie. The other option would be PHPSESSID
 		
-		var jsonData = process(params, function(err, data) {
+		var jsonData = searchProcess(params, function(err, data) {
 			if(err) {
 				console.log(err);
 				res.statusCode = 400;
@@ -252,7 +252,7 @@ function parseCookies (request) {
 
 
 
-function process(params, cb) {
+function searchProcess(params, cb) {
 
 	//Get the session data
 	readSession(params.sessionId, function(session) {			//eg. 'sgo3vosp1ej150sln9cvdslqm0'
