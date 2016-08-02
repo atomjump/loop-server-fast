@@ -202,7 +202,7 @@ function handleServer(_req, _res) {
 		var cookies = parseCookies(req);
 		params.sessionId = cookies.ses;		//This is our custom cookie. The other option would be PHPSESSID
 		
-		var jsonData = process(params, cb(err, data) {
+		var jsonData = process(params, function(err, data) {
 			if(err) {
 				console.log(err);
 				res.statusCode = 400;
@@ -318,12 +318,12 @@ function process(params, cb) {
 				}
 			
 				if(session['logged-user']) {
-					userCheck = " OR int_author_id = " + session['logged-user'] . " OR int_whisper_to_id = " + session['logged-user']; 
+					userCheck = " OR int_author_id = " + session['logged-user'] + " OR int_whisper_to_id = " + session['logged-user']; 
 			
 				}
 			
 				if(session['logged-group-user']) {
-					userChech = userCheck + " OR int_author_id = " . session['logged-group-user'] . " OR int_whisper_to_id = " . session['logged-group-user']; 
+					userChech = userCheck + " OR int_author_id = " + session['logged-group-user'] + " OR int_whisper_to_id = " + session['logged-group-user']; 
 			
 				}
 			
