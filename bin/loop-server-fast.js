@@ -216,6 +216,7 @@ function handleServer(_req, _res) {
 		
 		console.log("Parsed to query string:" + url);
 		var params = querystring.parse(url);
+		console.log("Query params = " + JSON.stringify(params));
 		
 		var cookies = parseCookies(req);
 		params.sessionId = cookies.ses;		//This is our custom cookie. The other option would be PHPSESSID
