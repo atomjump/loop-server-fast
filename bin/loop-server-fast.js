@@ -66,6 +66,26 @@ if((process.argv[3]) && (process.argv[3] == '-production')){
 if(cnf.readPort) {
 	listenPort = cnf.readPort;
 }
+
+//Create an https server if we specify a key and cert file
+if(cnf.httpsKey) {
+	//httpsKey should point to the key .pem file
+	httpsFlag = true;
+	if(!serverOptions.key) {
+		serverOptions.key = fs.readFileSync(content.httpsKey);
+		console.log("https key loaded");
+	}
+ }
+			 
+ if(cnf.httpsCert) {
+	//httpsCert should point to the cert .pem file
+	httpsFlag = true;
+	if(!serverOptions.cert) {
+		serverOptions.cert = fs.readFileSync(content.httpsCert);
+		console.log("https cert loaded");
+	}
+	
+ }
  
 
 
