@@ -261,7 +261,12 @@ function parseCookies (request) {
 }
 
 
+function ago(timeStr) {
+	//TODO: time ago
+	return "1 day";
 
+
+}
 
 function searchProcess(params, cb) {
 
