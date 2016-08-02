@@ -205,13 +205,13 @@ function handleServer(_req, _res) {
 		console.log("Requesting: " + req.url);
 		
 		//It must include search-chat.php or it is ignored.
-		if(req.url.indexOf("search-chat.php") < 0) {
+		if(req.url.indexOf("search-chat.php?") < 0) {
 			res.writeHead(200, {'content-type': 'text/plain'});  
 			res.end("Not available");
 			return;
 		}	
 			
-		var url = req.url.substring(req.url.indexOf("search-chat.php") + 15);   //15 is length of 'search-chat.php'. We want the url as all the params after this. search-chat.php
+		var url = req.url.substring(req.url.indexOf("search-chat.php?") + 16);   //15 is length of 'search-chat.php'. We want the url as all the params after this. search-chat.php
 		//is the current standard request entry point
 		
 		console.log("Parsed to query string:" + url);
