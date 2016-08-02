@@ -221,7 +221,7 @@ function handleServer(_req, _res) {
 			}
 			
 			//Prepare the result set for the jsonp result
-			var strData = params['callback'] + "(" + JSON.parse( JSON.stringify( data ) ) + ")"; 
+			var strData = params['callback'] + "(" + JSON.stringify( data ) + ")"; 
 			
 			res.on('error', function(err){
 				//Handle the errors here
