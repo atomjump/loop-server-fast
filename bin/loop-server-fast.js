@@ -47,7 +47,7 @@ if((process.argv)&&(process.argv[2])){
 } else {
   
   console.log("Usage: node loop-server-fast.js config/path/config.json [-production]");
-  exit(0);
+  process.exit(0);
 }
 
 
