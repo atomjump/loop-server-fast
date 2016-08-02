@@ -80,11 +80,11 @@ function cleanData(str)
 
 
 function trimChar(string, charToRemove) {
-    while(string.substring(0,1)==charToRemove) {
+    while(string.substring(0,1) == charToRemove) {
         string = string.substring(1);
     }
 
-    while(string.substring(string.length, -1)==charToRemove) {
+    while(string.slice(-1) == charToRemove) {
         string = string.slice(0, -1); //substring(0,string.length);  //.length -1??
     }
 
