@@ -85,7 +85,7 @@ function trimChar(string, charToRemove) {
     }
 
     while(string.substring(string.length, -1)==charToRemove) {
-        string = string.substring(0,string.length-2);  //.length -1??
+        string = string.substring(0,string.length);  //.length -1??
     }
 
     return string;
