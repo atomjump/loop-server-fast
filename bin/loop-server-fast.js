@@ -138,7 +138,7 @@ function readSession(sessionId, cb)
 							var paramValue = paramValues[1];
 						} else {
 							//A string, [1] is the string length, [2] is the string itself
-							var paramValue = trimChar(paramValues[2], "\"");
+							var paramValue = trimChar(paramValues[2], '"');
 						}
 						
 						keyValues[paramData[0]] = paramValue;
