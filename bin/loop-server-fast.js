@@ -36,9 +36,10 @@ var async = require('async');
 var mysql = require('mysql');
 var os = require('os');
 
-var sessionData;
 
-
+var httpsFlag = false;				//whether we are serving up https (= true) or http (= false)
+var serverOptions = {};				//default https server options (see nodejs https module)
+var listenPort = 3277;				//default listen port
 
 
 if(process.argv[2]){
@@ -85,7 +86,7 @@ function trimChar(string, charToRemove) {
     }
 
     while(string.slice(-1) == charToRemove) {
-        string = string.slice(0, -1); //substring(0,string.length);  //.length -1??
+        string = string.slice(0, -1); 
     }
 
     return string;
@@ -154,34 +155,248 @@ function readSession(sessionId, cb)
 
 
 
+function httpHttpsCreateServer(options) {
+	if(httpsFlag == true) {
+		console.log("Starting https server.");
+		https.createServer(options, handleServer).listen(listenPort);
+		
+		
+	} else {
+		console.log("Starting http server.");
+		http.createServer(handleServer).listen(listenPort);
+	}
+	
+}
 
 
 
-var layer = 3;
-var ip = "1.2.3.4";
-var userCheck = "";
-var initialRecords = 50;
 
 
-//Get the session data
-readSession('sgo3vosp1ej150sln9cvdslqm0', function(session) {
-	console.log("Finished. Logged user:");
-	console.log(session['logged-user']);
+function handleServer(_req, _res) {
+	
+	var req = _req;
+	var res = _res;
+	var body = [];
+	
+	//Start ordinary error handling
+	req.on('error', function(err) {
+	  // This prints the error message and stack trace to `stderr`.
+	  console.error(err.stack);
+	  
+	  res.statusCode = 400;			//Error during transmission - tell the app about it
+	  res.end();
+	});
+	
+	req.on('data', function(chunk) {
+		body.push(chunk);
+	});
+
+	req.on('end', function() {
 
 
-});
+		//A get request to pull from the server
+		// show a file upload form
+		var url = req.url;
+		var params = querystring.parse(url);
+		
+		var cookies = parseCookies(req);
+		params.sessionId = cookies.ses;		//This is our custom cookie. The other option would be PHPSESSID
+		
+		var jsonData = process(params, cb(err, data) {
+			if(err) {
+				console.log(err);
+				res.statusCode = 400;
+				res.end();
+			}
+			
+			//Prepare the result set for the jsonp result
+			var strData = params['callback'] + "(" + JSON.parse( JSON.stringify( data ) ) + ")"; 
+			
+			res.on('error', function(err){
+				//Handle the errors here
+				res.statusCode = 400;
+				res.end();
+			})
+
+			  res.writeHead(200, {'content-type': 'text/plain'});  
+	  
+	  
+			  res.end(strData, function(err) {
+				  //Wait until finished sending, then delete locally
+				  if(err) {
+					 console.log(err);
+				  } else {
+					//success, do nothing
+			
+				   }
+			  });
+		});		//End of process
+		
+	});  //End of req end
+	
+}
+	    
+	  
+function parseCookies (request) {
+    var list = {},
+        rc = request.headers.cookie;
+
+    rc && rc.split(';').forEach(function( cookie ) {
+        var parts = cookie.split('=');
+        list[parts.shift().trim()] = decodeURI(parts.join('='));
+    });
+
+    return list;
+}
 
 
+
+
+function process(params, cb) {
+
+	//Get the session data
+	readSession(params.sessionId, function(session) {			//eg. 'sgo3vosp1ej150sln9cvdslqm0'
+		console.log("Finished getting session data. Logged user:" + session['logged-user']);
+
+
+
+
+		if((session['logged-user'])&&(session['logged-user'] != '')) {
+			//Already logged in, but check if we know the ip address
+			if((!session['user-ip'])||(session['user-ip'] == '')) {
+				//No ip. - TODO will have to revert back to the PHP version
+			} else {
+			
+				//We're good to make a db request
+				
+				//TODO increment and write the view-count session var.
+				
+				
+				var layer = 3;
+				var ip = "1.2.3.4";
+				var userCheck = "";
+				var initialRecords = 100;
+				var outputJSON = {};
+				var debug = false;
+
+	
+				//PHP
+				//TODO: date_default_timezone_set($server_timezone);
+
+				if((params.passcode) && (params.passcode != '')||((params.reading) && (params.reading != ''))) { 
+				//TODO: 
+				/*$layer_info = $ly->get_layer_id($_REQUEST['passcode'], $_REQUEST['reading']);
+				if($layer_info) {
+					$layer = $layer_info['int_layer_id'];
+				} else {
+					//Create a new layer - TODO: don't allow layers so easily
+					$layer = $ly->new_layer($_REQUEST['passcode'], 'public'); 
+					
+					//Given this is a new layer - the first user is the correct user
+					$lg = new cls_login();
+					$lg->update_subscriptions(clean_data($_REQUEST['whisper_site']), $layer);	
+					
+				}*/
+				
+				} else {	//End of passcode not = ''
+
+					if(session['authenticated-layer']) {
+						layer = session['authenticated-layer'];
+					} else {
+						layer = 1;		//Default to about layer
+					}
+				}
+
+				if((params.units) && (params.units != '')) {
+					units = params.units;
+				}
+
+				if((params.dbg) && (params.dbg == 'true')) {
+					debug = true;
+				} else {
+					debug = false;
+				}
+			
+				if(session['logged-user']) {
+					userCheck = " OR int_author_id = " + session['logged-user'] . " OR int_whisper_to_id = " + session['logged-user']; 
+			
+				}
+			
+				if(session['logged-group-user']) {
+					userChech = userCheck + " OR int_author_id = " . session['logged-group-user'] . " OR int_whisper_to_id = " . session['logged-group-user']; 
+			
+				}
+			
+				if((params.records) && (params.records < 100)) {
+					initialRecords = 100;	//min this can be - needs to be about 4 to 1 of private to public to start reducing the number of public messages visible
+				} else {
+					if(params.records) {
+						initialRecords = params.records;
+					}
+				}
+			
+			
+
+
+				//TODO: $ip = $ly->getRealIpAddr();
+			
 
 			
-connection.query("SELECT * FROM tbl_ssshout WHERE int_layer_id = " + layer + " AND enm_active = 'true' AND (var_whisper_to = '' OR ISNULL(var_whisper_to) OR var_whisper_to ='" + ip + "' OR var_ip = '" + ip + "' " + userCheck + ") ORDER BY int_ssshout_id DESC LIMIT " + initialRecords, function(err, rows, fields) {
+				connection.query("SELECT * FROM tbl_ssshout WHERE int_layer_id = " + layer + " AND enm_active = 'true' AND (var_whisper_to = '' OR ISNULL(var_whisper_to) OR var_whisper_to ='" + ip + "' OR var_ip = '" + ip + "' " + userCheck + ") ORDER BY int_ssshout_id DESC LIMIT " + initialRecords, function(err, rows, fields) {
   
   
-  if (err) throw err;
+				  if (err) throw err;
   
-  console.log(rows[0].var_shouted);
+				  //console.log(rows[0].var_shouted);
+
+				  outputJSON.res = [];
+				  outputJSON.ses = params.sessionId;
+				  
+				  for(var cnt = 0; cnt< rows.length; cnt++) {
+				  
+				  			var whisper = true;		//TODO generate these.
+				  	
+				  			var newEntry = {
+				  				'text': rows[cnt].var_shouted_processed,
+				  				'lat': rows[cnt].latitude,
+				  				'lon': rows[cnt].longtiude,
+				  				'dist': rows[cnt].dist,
+				  				'ago': ago(rows[cnt].date_when_shouted),
+				  				'whisper': whisper
+				  			
+				  			}
+				  	
+				  			outputJSON.res.push(newEntry);
+				  							  
+				  
+				  }
+
+				  cb(null, outputJSON);			//No errors
+
+				   	
 
   
-  connection.end();
-});
+				  connection.end();
+				});
+			}
+		} else {
+			//Not logged in - TODO will have to revert back to the PHP version
+		
+		}
+	
+	
+	});		//End of readSession
+
+
+}
+
+
+
+
+
+
+
+//Run at server startup
+httpHttpsCreateServer(serverOptions);  
+
  
