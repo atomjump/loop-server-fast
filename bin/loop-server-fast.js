@@ -202,7 +202,12 @@ function handleServer(_req, _res) {
 
 		//A get request to pull from the server
 		// show a file upload form
-		var url = req.url;
+		console.log("Requesting: " + req.url);
+		
+		var url = req.url.substring(req.url.indexOf("search-chat.php") + 15);   //15 is length of 'search-chat.php'. We want the url as all the params after this. search-chat.php
+		//is the current standard request entry point
+		
+		console.log("Parsed to query string:" + url);
 		var params = querystring.parse(url);
 		
 		var cookies = parseCookies(req);
@@ -346,9 +351,10 @@ function searchProcess(params, cb) {
 
 				//TODO: $ip = $ly->getRealIpAddr();
 			
-
+				var sql = "SELECT * FROM tbl_ssshout WHERE int_layer_id = " + layer + " AND enm_active = 'true' AND (var_whisper_to = '' OR ISNULL(var_whisper_to) OR var_whisper_to ='" + ip + "' OR var_ip = '" + ip + "' " + userCheck + ") ORDER BY int_ssshout_id DESC LIMIT " + initialRecords;
+				console.log("Query: " + sql);
 			
-				connection.query("SELECT * FROM tbl_ssshout WHERE int_layer_id = " + layer + " AND enm_active = 'true' AND (var_whisper_to = '' OR ISNULL(var_whisper_to) OR var_whisper_to ='" + ip + "' OR var_ip = '" + ip + "' " + userCheck + ") ORDER BY int_ssshout_id DESC LIMIT " + initialRecords, function(err, rows, fields) {
+				connection.query(sql, function(err, rows, fields) {
   
   
 				  if (err) throw err;
