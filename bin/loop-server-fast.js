@@ -68,7 +68,7 @@ if((process.argv)&&(process.argv[3])){
   lang = msg.defaultLanguage;
   
   
-  var time = msg.msgs[lang].time;
+  /*var time = msg.msgs[lang].time;
   units = [
     { name: time.second, plural: time.seconds, limit: 60, in_seconds: 1 },
     { name: time.minute, plural: time.minutes, limit: 3600, in_seconds: 60 },
@@ -77,7 +77,15 @@ if((process.argv)&&(process.argv[3])){
     { name: time.week, plural: time.weeks, limit: 2629743, in_seconds: 604800  },
     { name: time.month, plural: time.months, limit: 31556926, in_seconds: 2629743 },
     { name: time.year, plural: time.years, limit: null, in_seconds: 31556926 }
-  ];
+  ];*/
+  
+  units = { name: "sec", plural: "secs", limit: 60, in_seconds: 1 },
+    { name: "minute", plural: "mins", limit: 3600, in_seconds: 60 },
+    { name: "hour", plural: "hours", limit: 86400, in_seconds: 3600  },
+    { name: "day", plural: "days", limit: 604800, in_seconds: 86400 },
+    { name: "week", plural: "weeks", limit: 2629743, in_seconds: 604800  },
+    { name: "month", plural: "months", limit: 31556926, in_seconds: 2629743 },
+    { name: "year", plural: "years", limit: null, in_seconds: 31556926 }
   
   
 } else {
@@ -321,7 +329,7 @@ function parseCookies (request) {
 }
 
 
-function ago(time) {
+function ago(timeStr) {
    //Time ago
    // Split timestamp into [ Y, M, D, h, m, s ]
    /*
