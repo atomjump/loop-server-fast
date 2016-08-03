@@ -47,6 +47,7 @@ var msg = {};
 var lang;
 var timeUnits;			//time units
 var verbose = false;
+var currentDbServer = 0;
 
 
 if((process.argv)&&(process.argv[2])){
@@ -272,7 +273,11 @@ function handleServer(_req, _res) {
 		params.ip = getRealIpAddress(req);
 		
 		//Choose a random db connection
-		params.connection = connections[0];
+		params.connection = connections[currentDbServer];
+		
+		//Round robin the connection
+		currentDbServer ++;
+		if(currentDbServer >= cnf.db.hosts.length) currentDbServer = 0;
 		
 		
 		var jsonData = searchProcess(params, function(err, data) {
