@@ -355,7 +355,7 @@ function getRealIpAddress(req) {
      req.connection.socket.remoteAddress;
 	*/
 
-	return ip_info.clientIp;
+	return ip_info.clientIp.replace(/^[0-9.,]+$/,"");
 }
 
 /* Note - here is a fully correct version from the PHP, but I'm not sure we need it
