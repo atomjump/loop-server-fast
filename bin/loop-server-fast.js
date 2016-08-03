@@ -37,6 +37,7 @@ var mysql = require('mysql');
 var os = require('os');
 const querystring = require('querystring');
 var crypto = require('crypto');
+var get_ip = require('ipware')().get_ip;
 
 
 var httpsFlag = false;				//whether we are serving up https (= true) or http (= false)
@@ -345,13 +346,16 @@ function md5(data) {
 
 function getRealIpAddress(req) {
 
+	var ip_info = get_ip(req);
+	
 	//This is simplistic version of the PHP one, which is below.
-	var ip = req.headers['x-forwarded-for'] || 
+	/*var ip = req.headers['x-forwarded-for'] || 
      req.connection.remoteAddress || 
      req.socket.remoteAddress ||
      req.connection.socket.remoteAddress;
+	*/
 
-	return ip;
+	return ip_info.clientIp;
 }
 
 /* Note - here is a fully correct version from the PHP, but I'm not sure we need it
