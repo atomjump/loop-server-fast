@@ -333,15 +333,20 @@ function ago(mysqlTimeStr) {
   
    var nowSecs = new Date().getTime();
    var diff = (nowSecs - recTimeSecs) / 1000;
+  	
+   console.log(diff);	
   
   var i = 0;
   var unit = {};
-  while (unit = units[i++]) {
-    if (diff < unit.limit || !unit.limit){
+  while (unit = units[i]) {
+    if ((diff < unit.limit) || (!unit.limit)){
       var diff =  Math.floor(diff / unit.in_seconds);
       return diff + " " + (diff>1 ? unit.plural : unit.name);
     }
+    i++;
   }
+  
+  return "Unknown";
 
 
 
