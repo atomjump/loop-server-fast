@@ -328,7 +328,7 @@ function searchProcess(params, cb) {
 				//TODO: date_default_timezone_set($server_timezone);
 
 				if((params.passcode) && (params.passcode != '')||((params.reading) && (params.reading != ''))) { 
-				//TODO: 
+				//TODO: forward to PHP
 				/*$layer_info = $ly->get_layer_id($_REQUEST['passcode'], $_REQUEST['reading']);
 				if($layer_info) {
 					$layer = $layer_info['int_layer_id'];
@@ -383,6 +383,8 @@ function searchProcess(params, cb) {
 
 
 				//TODO: $ip = $ly->getRealIpAddr();
+				
+			
 			
 				var sql = "SELECT * FROM tbl_ssshout WHERE int_layer_id = " + layer + " AND enm_active = 'true' AND (var_whisper_to = '' OR ISNULL(var_whisper_to) OR var_whisper_to ='" + ip + "' OR var_ip = '" + ip + "' " + userCheck + ") ORDER BY int_ssshout_id DESC LIMIT " + initialRecords;
 				console.log("Query: " + sql);
@@ -397,7 +399,92 @@ function searchProcess(params, cb) {
 				  outputJSON.res = [];
 				  outputJSON.ses = params.sessionId;
 				  
+				  
+				  var mymaxResults = rows.length;
+				  if(mymaxResults > params.records) {
+					 mymaxResults = params.records;	//limit number to records requested
+					 var more = true;   //show more flag for
+				  }
+				  var actualCnt = 0;
+				  
+				  
+				
+				  
 				  for(var cnt = 0; cnt< rows.length; cnt++) {
+				  
+				  
+				      var authorIP = rows[cnt].var_ip;
+					  var authorUserID = rows[cnt].int_author_id;
+					  var combinedAuthor = authorIP;
+						if(authorUserID) {
+							combinedAuthor = combinedAuthor +  ":" + authorUserID;
+						}
+				
+						var whisperToIP = rows[cnt].var_whisper_to;
+						var whisperToUserID = rows[cnt].int_whisper_to_id;
+			
+			
+			
+					//If no whispering, or are whispering but to the viewer's ip address, or from the viewer's own ip
+					if((whisperToIP == '')||		//ie. public
+					   ((whisperToIP == ip)&&(whisperToUserID == null))||	//private but no user id known
+					   (whisperToUserID == session['logged-user'])||  //talk direct to owner
+					   ((authorIP == ip)&&(authorUserID == null))||  				//authored by this ip no user known of author
+					   (authorUserID == session['logged-user'])||						//authored by this viewer
+					   ((session['logged-group-user'] != "")&&(whisperToUserID != "") && (whisperToUserID == session['logged-group-user']))) {				//private message to group
+	
+						//Right actually going to include message - now decide if whispering or public
+						
+						if((whisperToIP == ip && (whisperToUserID == null))||		//if it was a whisper intended for our ip but unknown user
+								(whisperToUserID == session['logged-user'])||				//or a whisper specifically for us
+						   (authorIP == ip && (whisperToIP != ''|| (whisperToUserID)))||  //or def a whisper by viewer
+						   (authorUserID == session['logged-user'] && (whisperToIP != ''|| (whisperToUserID)))) { //or a whisper by viewer logged in
+							//This is a whisper to you or from you, use 1/3 font size
+							whisper = true;
+						} else {
+							//A shout
+							whisper = false;
+						}
+						
+						if(session['logged-group-user']) {
+							if(whisperToUserID == session['logged-group-user']) {
+								whisper = true;
+						
+							}
+						}
+					
+						if(!session['logged-user']) {
+							//Force a blank user to see only public requests, until he has actually commented. 
+							whisper = false;		
+					
+						}
+						 
+	
+		
+						var shade = rows[cnt].int_ssshout_id %2;
+						if(layer == 0) {
+							//Public layer
+							if(shade == 0) {
+								bgcolor = "public-light";  
+							} else {
+								bgcolor = "public-dark"; 
+							}
+						} else {
+							//Private layer - different colours
+							if(shade == 0) {
+								bgcolor = "private-light"; 
+							} else {
+								bgcolor = "private-dark"; 
+							}
+		
+						}
+		
+						//TODO: date_default_timezone_set($server_timezone); //E.g. "UTC" GMT"
+						
+						
+						if(actualCnt <= mymaxResults) {			
+				  
+				  
 				  
 				  			var whisper = true;		//TODO generate these.
 				  	
@@ -412,6 +499,9 @@ function searchProcess(params, cb) {
 				  			}
 				  	
 				  			outputJSON.res.push(newEntry);
+				  			
+				  			actualCnt ++;		//Increment the actual result count
+				  		}
 				  							  
 				  
 				  }
