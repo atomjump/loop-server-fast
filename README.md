@@ -56,8 +56,16 @@ Open your firewall e.g. on Ubuntu (also see further details at https://www.digit
 ```
 sudo ufw allow 3277/tcp
 ```
+Now run your staging installation interface in a browser. It should continue as normal,
+but your NodeJS server is handling all read requests.
 
 
+# Starting and stopping
+
+```
+pm2 start loop-server-fast
+pm2 stop loop-server-fast
+```
 
 
 # Going live
