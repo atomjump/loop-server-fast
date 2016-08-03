@@ -23,7 +23,7 @@ sudo npm install pm2@latest -g
 sudo npm install loop-server-fast -g
 npm config set loop-server-fast:configFile /path/to/your/loop/server/config.json
 npm config set loop-server-fast:messagesFile /path/to/your/loop/server/messages.json
-pm2 start "$(npm prefix -global)/lib/node_modules/loop-server-fast/bin/start.sh"
+pm2 start "$(npm prefix -global)/lib/node_modules/loop-server-fast/loop-server-fast.sh"
 pm2 save
 pm2 startup     	#and run the command it outputs, to get autostart at boot-up.
 ```
