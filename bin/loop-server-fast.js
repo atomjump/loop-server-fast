@@ -412,7 +412,7 @@ function searchProcess(params, cb) {
 				  
 				  for(var cnt = 0; cnt< rows.length; cnt++) {
 				  
-				  
+				  	  var whisper = true;		//default
 				      var authorIP = rows[cnt].var_ip;
 					  var authorUserID = rows[cnt].int_author_id;
 					  var combinedAuthor = authorIP;
@@ -486,7 +486,6 @@ function searchProcess(params, cb) {
 				  
 				  
 				  
-				  			var whisper = true;		//TODO generate these.
 				  	
 				  			var newEntry = {
 				  				'text': rows[cnt].var_shouted_processed,
