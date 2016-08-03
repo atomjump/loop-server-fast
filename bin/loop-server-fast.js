@@ -435,10 +435,10 @@ function searchProcess(params, cb) {
 	
 						//Right actually going to include message - now decide if whispering or public
 						
-						if((whisperToIP == ip && (whisperToUserID == null))||		//if it was a whisper intended for our ip but unknown user
+						if(((whisperToIP == ip) && (whisperToUserID == null))||		//if it was a whisper intended for our ip but unknown user
 								(whisperToUserID == session['logged-user'])||				//or a whisper specifically for us
-						   (authorIP == ip && (whisperToIP != ''|| (whisperToUserID)))||  //or def a whisper by viewer
-						   (authorUserID == session['logged-user'] && (whisperToIP != ''|| (whisperToUserID)))) { //or a whisper by viewer logged in
+						   ((authorIP == ip) && ((whisperToIP != '')||(whisperToUserID)))||  //or def a whisper by viewer
+						   (authorUserID == session['logged-user'] && ((whisperToIP != '')|| (whisperToUserID)))) { //or a whisper by viewer logged in
 							//This is a whisper to you or from you, use 1/3 font size
 							whisper = true;
 						} else {
@@ -502,9 +502,11 @@ function searchProcess(params, cb) {
 				  			
 				  			actualCnt ++;		//Increment the actual result count
 				  		}
-				  							  
+				  		
+				  		
+				  	}	//End of valid message					  
 				  
-				  }
+				  }		//End of for loop
 
 				  cb(null, outputJSON);			//No errors
 
@@ -512,13 +514,17 @@ function searchProcess(params, cb) {
 
   
 				  //connection.end();
-				});
-			}
+
+				
+				});	//End of query
+			}	//End of do have an ip
+			
+			
 		} else {
 			//Not logged in - TODO will have to revert back to the PHP version
 			cb("Not logged in", null);
 		
-		}
+		}  
 	
 	
 	});		//End of readSession
