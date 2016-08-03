@@ -46,6 +46,7 @@ var listenPort = 3277;				//default listen port. Will get from the config readPo
 var msg = {};
 var lang;
 var timeUnits;			//time units
+var verbose = false;
 
 
 if((process.argv)&&(process.argv[2])){
@@ -187,7 +188,7 @@ function readSession(sessionId, cb)
 						}
 						
 						keyValues[paramData[0]] = paramValue;
-						console.log("Key:" + paramData[0] + " = " + paramValue);
+						if(verbose == true) console.log("Key:" + paramData[0] + " = " + paramValue);
 					} 		
 				}
 			}
@@ -240,7 +241,7 @@ function handleServer(_req, _res) {
 
 		//A get request to pull from the server
 		// show a file upload form
-		console.log("Requesting: " + req.url);
+		if(verbose == true) console.log("Requesting: " + req.url);
 		
 		//It must include search-chat.php or it is ignored.
 		if(req.url.indexOf("search-chat.php?") < 0) {
@@ -252,9 +253,9 @@ function handleServer(_req, _res) {
 		var url = req.url.substring(req.url.indexOf("search-chat.php?") + 16);   //15 is length of 'search-chat.php'. We want the url as all the params after this. search-chat.php
 		//is the current standard request entry point
 		
-		console.log("Parsed to query string:" + url);
+		if(verbose == true) console.log("Parsed to query string:" + url);
 		var params = querystring.parse(url);
-		console.log("Query params = " + JSON.stringify(params));
+		if(verbose == true) console.log("Query params = " + JSON.stringify(params));
 		
 		var cookies = parseCookies(req);
 		params.sessionId = cookies.ses;		//This is our custom cookie. The other option would be PHPSESSID
@@ -480,7 +481,7 @@ function foundLayer(params,
 	
 	
 		var sql = "SELECT * FROM tbl_ssshout WHERE int_layer_id = " + layer + " AND enm_active = 'true' AND (var_whisper_to = '' OR ISNULL(var_whisper_to) OR var_whisper_to ='" + ip + "' OR var_ip = '" + ip + "' " + userCheck + ") ORDER BY int_ssshout_id DESC LIMIT " + initialRecords;
-		console.log("Query: " + sql);
+		if(verbose == true) console.log("Query: " + sql);
 	
 		connection.query(sql, function(err, rows, fields) {
 
