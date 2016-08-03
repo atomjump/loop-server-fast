@@ -325,9 +325,12 @@ function ago(mysqlTimeStr) {
    //Time ago
    // Split timestamp into [ Y, M, D, h, m, s ]
    //console.log(JSON.stringify(mysqlTimeStr));
-   
+   var recTime = new Date(mysqlTimeStr);
+   console.log("recTime: " + JSON.stringify(recTime));
+   var recTimeSecs = recTime.getTime();
+   console.log("Rectimesecs = " + recTimeSecs);
   //Get diff in seconds 
-  var diff = (new Date().getTime() - new Date(mysqlTimeStr).getTime()) / 1000;
+  var diff = (new Date().getTime() - recTimeSecs) / 1000;
   
   var i = 0, unit;
   while (unit = units[i++]) {
