@@ -6,6 +6,11 @@
   "bin": {
     "loop-server-fast": "loop-server-fast.js"
   },
+  "config": {
+  	 "loopServerConfigFile": "",
+  	 "loopServerMessagesFile": ""
+  	 "production": false  
+  }
   "preferGlobal": "true",
   "scripts": {
     "start": "",

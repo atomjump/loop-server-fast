@@ -53,6 +53,7 @@ var currentDbServer = 0;
 if((process.argv)&&(process.argv[2])){
   var loopServerConfig = process.argv[2];
 } else {
+  if(process.env.npm_package_config_loopServerConfigFile
   
   console.log("Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]");
   process.exit(0);
@@ -65,9 +66,14 @@ var config = JSON.parse(fs.readFileSync(loopServerConfig));
 
 
 
-if((process.argv)&&(process.argv[3])){
+if(((process.argv)&&(process.argv[3]))||(process.env.npm_package_config_loopServerMessagesFile)){
   //Get the messages and ago constants
-  var loopServerMessages = process.argv[3];
+  if(process.argv[3]) {
+  	var loopServerMessages = process.argv[3];
+  } else {
+  	//Get from the npm config
+  	var loopServerMessages = process.env.npm_package_config_loopServerMessagesFile;
+  }
   msg = JSON.parse(fs.readFileSync(loopServerMessages));
   lang = msg.defaultLanguage;
   
