@@ -330,15 +330,17 @@ function ago(mysqlTimeStr) {
    var recTimeSecs = recTime.getTime();
    console.log("Rectimesecs = " + recTimeSecs);
   //Get diff in seconds 
-  var diff = (new Date().getTime() - recTimeSecs) / 1000;
   
-  var i = 0, unit;
-  while (unit = units[i++]) {
+   var nowSecs = new Date().getTime();
+   var diff = (nowSecs - recTimeSecs) / 1000;
+  
+  var i = 0;
+  while (var unit = units[i++]) {
     if (diff < unit.limit || !unit.limit){
       var diff =  Math.floor(diff / unit.in_seconds);
       return diff + " " + (diff>1 ? unit.plural : unit.name);
     }
-  };
+  }
 
 
 
