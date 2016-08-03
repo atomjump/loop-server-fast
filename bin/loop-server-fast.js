@@ -159,7 +159,7 @@ function trimChar(string, charToRemove) {
 
 
 
-function readSession(sessionId, cb)
+function readSession(params, cb)
 {
 	
 		/* 
@@ -170,7 +170,7 @@ function readSession(sessionId, cb)
         var keyValues = {};
         
         
-        connection.query("SELECT * FROM php_session WHERE session_id='" + cleanData(sessionId) + "'", function(err, rows, fields) {
+        params.connection.query("SELECT * FROM php_session WHERE session_id='" + cleanData(params.sessionId) + "'", function(err, rows, fields) {
         	
         	if (err) throw err;
         	
@@ -244,8 +244,6 @@ function handleServer(_req, _res) {
 
 		//A get request to pull from the server
 		
-		//Choose a random db connection
-		var connection = connections[0];
 		
 		
 		// show a file upload form
@@ -272,6 +270,9 @@ function handleServer(_req, _res) {
 		}
 		
 		params.ip = getRealIpAddress(req);
+		
+		//Choose a random db connection
+		params.connection = connections[0];
 		
 		
 		var jsonData = searchProcess(params, function(err, data) {
@@ -491,7 +492,7 @@ function foundLayer(params,
 		var sql = "SELECT * FROM tbl_ssshout WHERE int_layer_id = " + layer + " AND enm_active = 'true' AND (var_whisper_to = '' OR ISNULL(var_whisper_to) OR var_whisper_to ='" + ip + "' OR var_ip = '" + ip + "' " + userCheck + ") ORDER BY int_ssshout_id DESC LIMIT " + initialRecords;
 		if(verbose == true) console.log("Query: " + sql);
 	
-		connection.query(sql, function(err, rows, fields) {
+		params.connection.query(sql, function(err, rows, fields) {
 
 
 		  if (err) throw err;
@@ -627,7 +628,7 @@ function foundLayer(params,
 function searchProcess(params, cb) {
 
 	//Get the session data
-	readSession(params.sessionId, function(session) {			//eg. 'sgo3vosp1ej150sln9cvdslqm0'
+	readSession(params, function(session) {			//eg. 'sgo3vosp1ej150sln9cvdslqm0'
 		if(verbose == true) console.log("Finished getting session data. Logged user:" + session['logged-user']);
 
 
@@ -661,7 +662,7 @@ function searchProcess(params, cb) {
 					
 					var sql = "SELECT int_layer_id FROM tbl_layer WHERE passcode = '" + md5(params.passcode) + "'";
 					
-					connection.query(sql, function(err, rows, fields) {
+					params.connection.query(sql, function(err, rows, fields) {
 					
 						if(err) {
 							console.log("Error: " + err);
