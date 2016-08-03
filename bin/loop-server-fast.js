@@ -24,14 +24,10 @@ require("date-format-lite");
 var mv = require('mv');
 var fs = require('fs');
 var exec = require('child_process').exec;
-var drivelist = require('drivelist');
-var uuid = require('node-uuid');
 var fsExtra = require('fs-extra');
 var request = require("request");
 var needle = require('needle');
 var readChunk = require('read-chunk'); // npm install read-chunk 
-var imageType = require('image-type');
-var shredfile = require('shredfile')();
 var async = require('async');
 var mysql = require('mysql');
 var os = require('os');
@@ -48,14 +44,14 @@ var lang;
 var timeUnits;			//time units
 var verbose = false;
 var currentDbServer = 0;
-var usage = "Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]\n\nOr:\nsudo npm config set loop-server-fast:loopServerConfigFile /path/to/your/loop/server/config.json\nsudo npm config set loop-server-fast:loopServerMessagesFile /path/to/your/loop/server/messages.json";
+var usage = "Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]\n\nOr:\n\nnpm config set loop-server-fast:loopServerConfigFile /path/to/your/loop/server/config.json\nnpm config set loop-server-fast:loopServerMessagesFile /path/to/your/loop/server/messages.json";
 
 
 if((process.argv)&&(process.argv[2])){
   var loopServerConfig = process.argv[2];
 } else {
-  if(process.env.npm_package_config_loopServerConfigFile) {
-  	 var loopServerConfig = process.env.npm_package_config_loopServerConfigFile;
+  if(process.env.npm_package_config_configFile) {
+  	 var loopServerConfig = process.env.npm_package_config_configFile;
   } else {
   
   		console.log(usage);
@@ -67,18 +63,25 @@ if((process.argv)&&(process.argv[2])){
 
 
 var config = JSON.parse(fs.readFileSync(loopServerConfig));
+if(!config) {
+     console.log("Couldn't find config file " + loopServerConfig);
+  	 process.exit(0);
+}
 
 
-
-if(((process.argv)&&(process.argv[3]))||(process.env.npm_package_config_loopServerMessagesFile)){
+if(((process.argv)&&(process.argv[3]))||(process.env.npm_package_config_messagesFile)){
   //Get the messages and ago constants
   if(process.argv[3]) {
   	var loopServerMessages = process.argv[3];
   } else {
   	//Get from the npm config
-  	var loopServerMessages = process.env.npm_package_config_loopServerMessagesFile;
+  	var loopServerMessages = process.env.npm_package_config_messagesFile;
   }
   msg = JSON.parse(fs.readFileSync(loopServerMessages));
+  if(!msg) {
+     console.log("Couldn't find messages file " + loopServerMessages);
+  	 process.exit(0);
+  }
   lang = msg.defaultLanguage;
   
   

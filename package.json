@@ -2,13 +2,13 @@
   "author": "AtomJump.com",
   "name": "loop-server-fast",
   "description": "A faster NodeJS reader to complement the AtomJump Loop Server.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "bin": {
     "loop-server-fast": "loop-server-fast.js"
   },
   "config": {
-  	 "loopServerConfigFile": "",
-  	 "loopServerMessagesFile": "",
+  	 "configFile": "",
+  	 "messagesFile": "",
   	 "production": false  
   },
   "preferGlobal": "true",
