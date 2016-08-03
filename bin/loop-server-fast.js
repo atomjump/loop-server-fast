@@ -335,7 +335,8 @@ function ago(mysqlTimeStr) {
    var diff = (nowSecs - recTimeSecs) / 1000;
   
   var i = 0;
-  while (var unit = units[i++]) {
+  var unit = {};
+  while (unit = units[i++]) {
     if (diff < unit.limit || !unit.limit){
       var diff =  Math.floor(diff / unit.in_seconds);
       return diff + " " + (diff>1 ? unit.plural : unit.name);
