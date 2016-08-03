@@ -122,17 +122,20 @@ if(cnf.httpsKey) {
  
  
  
+var connections = [];
 
+for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
 
-var connection = mysql.createConnection({
-  host     : cnf.db.hosts[0],
-  user     : cnf.db.user,
-  password : cnf.db.pass,
-  database : cnf.db.name
-});
+	var connections[cnt] = mysql.createConnection({
+	  host     : cnf.db.hosts[cnt],
+	  user     : cnf.db.user,
+	  password : cnf.db.pass,
+	  database : cnf.db.name
+	});
  
-connection.connect();
+	connections[cnt].connect();
 
+}
 
 function cleanData(str)
 {
@@ -240,6 +243,11 @@ function handleServer(_req, _res) {
 
 
 		//A get request to pull from the server
+		
+		//Choose a random db connection
+		var connection = connections[0];
+		
+		
 		// show a file upload form
 		if(verbose == true) console.log("Requesting: " + req.url);
 		
@@ -620,7 +628,7 @@ function searchProcess(params, cb) {
 
 	//Get the session data
 	readSession(params.sessionId, function(session) {			//eg. 'sgo3vosp1ej150sln9cvdslqm0'
-		console.log("Finished getting session data. Logged user:" + session['logged-user']);
+		if(verbose == true) console.log("Finished getting session data. Logged user:" + session['logged-user']);
 
 
 
