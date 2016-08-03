@@ -126,7 +126,7 @@ var connections = [];
 
 for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
 
-	var connections[cnt] = mysql.createConnection({
+	connections[cnt] = mysql.createConnection({
 	  host     : cnf.db.hosts[cnt],
 	  user     : cnf.db.user,
 	  password : cnf.db.pass,
