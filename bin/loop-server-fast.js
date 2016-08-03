@@ -258,12 +258,23 @@ function handleServer(_req, _res) {
 		
 		var cookies = parseCookies(req);
 		params.sessionId = cookies.ses;		//This is our custom cookie. The other option would be PHPSESSID
+		if(params.sessionId) {
+			params.sessionId = cookies.PHPSESSID;
+		}
 		
 		params.ip = getRealIpAddress(req);
 		
 		
 		var jsonData = searchProcess(params, function(err, data) {
 			if(err) {
+				if(err == 'PHP') {
+					//Call the PHP version of this script
+					
+					var fullUrl = joinPath(cnf.webRoot, url);
+					callPHP(fullUrl);
+					return;
+				}
+			
 				console.log(err);
 				res.statusCode = 400;
 				res.end();
@@ -347,13 +358,6 @@ function md5(data) {
 function getRealIpAddress(req) {
 
 	var ip_info = get_ip(req);
-	
-	//This is simplistic version of the PHP one, which is below.
-	/*var ip = req.headers['x-forwarded-for'] || 
-     req.connection.remoteAddress || 
-     req.socket.remoteAddress ||
-     req.connection.socket.remoteAddress;
-	*/
 
 	return ip_info.clientIp.replace(/^[0-9.,]+$/,"");
 }
@@ -420,6 +424,13 @@ function getRealIpAddress(req) {
 	*/
 
 
+
+
+function callPHP(url, res) {
+
+	request.get(url).pipe(res);
+
+}
 
 
 
@@ -616,7 +627,8 @@ function searchProcess(params, cb) {
 		if((session['logged-user'])&&(session['logged-user'] != '')) {
 			//Already logged in, but check if we know the ip address
 			if((!session['user-ip'])||(session['user-ip'] == '')) {
-				//No ip. - TODO will have to revert back to the PHP version
+				//No ip. Will have to revert back to the PHP version
+				cb("PHP", null);
 			} else {
 			
 				//We're good to make a db request
@@ -650,14 +662,9 @@ function searchProcess(params, cb) {
 								
 								foundLayer(params, session, layer, ip, userCheck, initialRecords, outputJSON, debug, cb);
 							} else {
-							//Unknown or new layer
-								//TODO: shift off to PHP request
-								/*$layer = $ly->new_layer($_REQUEST['passcode'], 'public'); 
-					
-								//Given this is a new layer - the first user is the correct user
-								$lg = new cls_login();
-								$lg->update_subscriptions(clean_data($_REQUEST['whisper_site']), $layer);	
-								*/
+								cb("PHP", null);
+								//Unknown or new layer - head back to PHP
+								
 							
 							}
 						}
@@ -686,8 +693,8 @@ function searchProcess(params, cb) {
 			
 			
 		} else {
-			//Not logged in - TODO will have to revert back to the PHP version
-			cb("Not logged in", null);
+			//Not logged in - revert back to the PHP version
+			cb("PHP", null);
 		
 		}  
 	
