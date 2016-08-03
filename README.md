@@ -94,11 +94,19 @@ pm2 restart loop-server-fast
 
 (or back to staging with 'false')
 
+
+
+# Troubleshooting
+
 You can track logs with
 ```
 pm2 logs
 ```
 
+If, you are on a small machine (e.g. 512MB RAM), and the install fails, try this
 
+```
+sudo npm install loop-server-fast -g -production 
+```
 
 
