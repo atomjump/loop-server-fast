@@ -48,6 +48,7 @@ var lang;
 var timeUnits;			//time units
 var verbose = false;
 var currentDbServer = 0;
+var usage = "Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]\n\nOr:\nsudo npm config set loop-server-fast:loopServerConfigFile /path/to/your/loop/server/config.json\nsudo npm config set loop-server-fast:loopServerMessagesFile /path/to/your/loop/server/messages.json";
 
 
 if((process.argv)&&(process.argv[2])){
@@ -57,7 +58,7 @@ if((process.argv)&&(process.argv[2])){
   	 var loopServerConfig = process.env.npm_package_config_loopServerConfigFile;
   } else {
   
-  		console.log("Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]");
+  		console.log(usage);
   		process.exit(0);
   }
 }
@@ -94,7 +95,7 @@ if(((process.argv)&&(process.argv[3]))||(process.env.npm_package_config_loopServ
   
   
 } else {
-   console.log("Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]");
+   console.log(usage);
   process.exit(0);
 }
 
