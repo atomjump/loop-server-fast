@@ -1,7 +1,8 @@
 <img src="https://atomjump.com/images/logo80.png">
 
 # loop-server-fast
-A faster NodeJS reader plugin to complement the AtomJump Loop Server.
+
+A faster NodeJS reader plugin to complement the AtomJump Loop Server (see http://atomjump.com).
 This speeds up the core of the AtomJump Loop Server PHP scripts, to allow for 
 a large increase in the number of simultaneous users, with the same hardware.
 
@@ -16,7 +17,7 @@ Linux server (or any machine with NodeJS)
 
 # Server Setup
 
-Follow the instructions to set up the Loop Server as a PHP script.
+Follow the instructions to set up the Loop Server as a PHP script. Then:
 
 ```
 sudo npm install pm2@latest -g
@@ -28,3 +29,9 @@ pm2 save
 pm2 startup     	#and run the command it outputs, to get autostart at boot-up.
 ```
 
+
+# Options
+
+```
+npm config set loop-server-fast:production true
+```

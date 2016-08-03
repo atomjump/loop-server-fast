@@ -107,7 +107,7 @@ if((process.argv[4]) && (process.argv[4] == '-production')){
   var cnf = config.production;
 } else {
   if(process.env.npm_package_config_production) {
-  	if(process.env.npm_package_config_production == true) {
+  	if(process.env.npm_package_config_production == 'true') {
   		var cnf = config.production;
   	} else {
   		var cnf = config.staging;
