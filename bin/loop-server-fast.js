@@ -43,7 +43,7 @@ var serverOptions = {};				//default https server options (see nodejs https modu
 var listenPort = 3277;				//default listen port. Will get from the config readPort if it is set there
 var msg = {};
 var lang;
-var units = [];			//time units
+var timeUnits;			//time units
 
 
 if((process.argv)&&(process.argv[2])){
@@ -79,13 +79,15 @@ if((process.argv)&&(process.argv[3])){
     { name: time.year, plural: time.years, limit: null, in_seconds: 31556926 }
   ];*/
   
-  units = { name: "sec", plural: "secs", limit: 60, in_seconds: 1 },
+  timeUnits = [
+    { name: "sec", plural: "secs", limit: 60, in_seconds: 1 },
     { name: "minute", plural: "mins", limit: 3600, in_seconds: 60 },
     { name: "hour", plural: "hours", limit: 86400, in_seconds: 3600  },
     { name: "day", plural: "days", limit: 604800, in_seconds: 86400 },
     { name: "week", plural: "weeks", limit: 2629743, in_seconds: 604800  },
     { name: "month", plural: "months", limit: 31556926, in_seconds: 2629743 },
     { name: "year", plural: "years", limit: null, in_seconds: 31556926 }
+    ];
   
   
 } else {
@@ -347,7 +349,7 @@ function ago(timeStr) {
   
   var i = 0;
   var unit = {};
-  while (unit = units[i]) {
+  while (unit = timeUnits[i]) {
   	console.log("unit:" + unit);
     if ((diff < unit.limit) || (!unit.limit)){
       var diff =  Math.floor(diff / unit.in_seconds);
