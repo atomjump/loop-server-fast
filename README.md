@@ -30,7 +30,7 @@ npm config set loop-server-fast:messagesFile /path/to/your/loop-server/config/me
 ```
 
 To your Loop Server's config/config.json, add the following
-`code()`
+```javascript
 {
    "staging": {
 	  ...
@@ -40,7 +40,7 @@ To your Loop Server's config/config.json, add the following
 	  ...	  
 	}
 }
-`code()`
+```
 
 (note, remove the [comments in square brackets above])
 
