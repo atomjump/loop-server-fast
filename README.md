@@ -10,9 +10,9 @@ a large increase in the number of simultaneous users, with the same hardware.
 
 # Requirements
 
-NodeJS >= 4.x
-AtomJump Loop Server >= 0.5.22
-Linux server (or any machine with NodeJS) 
+* NodeJS >= 4.x
+* AtomJump Loop Server >= 0.5.22
+* Linux server (or any machine with NodeJS) 
 
 
 # Server Setup
@@ -30,7 +30,7 @@ npm config set loop-server-fast:messagesFile /path/to/your/loop-server/config/me
 ```
 
 To your Loop Server's config/config.json, add the following
-```
+`code()`
 {
    "staging": {
 	  ...
@@ -40,7 +40,7 @@ To your Loop Server's config/config.json, add the following
 	  ...	  
 	}
 }
-```
+`code()`
 
 (note, remove the [comments in square brackets above])
 
