@@ -337,9 +337,7 @@ function ago(timeStr) {
    
    //console.log(JSON.stringify(mysqlTimeStr));
    var recTime = new Date(timeStr);
-   console.log("recTime: " + JSON.stringify(recTime));
    var recTimeSecs = recTime.getTime();
-   console.log("Rectimesecs = " + recTimeSecs);
   //Get diff in seconds 
   
    var nowSecs = new Date().getTime();
@@ -350,11 +348,9 @@ function ago(timeStr) {
   var i = 0;
   var unit = {};
   while (unit = timeUnits[i]) {
-  	console.log("unit:" + unit);
     if ((diff < unit.limit) || (!unit.limit)){
       var diff =  Math.floor(diff / unit.in_seconds);
-      var timeOut = diff + " " + (diff>1 ? unit.plural : unit.name);
-      console.log(timeOut);
+      var timeOut = diff + " " + (diff>1 ? unit.plural : unit.name) + " ago";
       return timeOut;
     }
     i++;
