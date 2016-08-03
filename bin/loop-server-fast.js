@@ -327,7 +327,7 @@ function ago(mysqlTimeStr) {
    //console.log(JSON.stringify(mysqlTimeStr));
    
   //Get diff in seconds 
-  var diff = (new Date().getTime() - mysqlTimeStr.getTime()) / 1000;
+  var diff = (new Date().getTime() - new Date(mysqlTimeStr).getTime()) / 1000;
   
   var i = 0, unit;
   while (unit = units[i++]) {
