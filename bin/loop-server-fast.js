@@ -68,7 +68,7 @@ if((process.argv)&&(process.argv[3])){
   lang = msg.defaultLanguage;
   
   
-  var time = msg.msgs.lang.time;
+  var time = msg.msgs[lang].time;
   units = [
     { name: time.second, plural: time.seconds, limit: 60, in_seconds: 1 },
     { name: time.minute, plural: time.minutes, limit: 3600, in_seconds: 60 },
