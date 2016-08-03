@@ -157,23 +157,7 @@ function trimChar(string, charToRemove) {
 function readSession(sessionId, cb)
 {
 	
-		/*     	$sql = "SELECT * FROM php_session WHERE session_id='" .clean_data($session_id) ."'";
-        $result = dbquery($sql)  or die("Unable to execute query $sql " . dberror());
-		while($row = db_fetch_array($result))
-		{
-          	$fieldarray[] = $row;
-        }
-        
-
-        
-        if (isset($fieldarray[0]['session_data'])) {
-            $this->fieldarray = $fieldarray[0];
-             
-            return $fieldarray[0]['session_data'];
-        } else {
-            
-            return '';  // return an empty string
-        } // if
+		/* 
         
         Sample session record
         | sgo3vosp1ej150sln9cvdslqm0 | 736     | 2016-06-09 16:04:03 | 2016-06-26 16:40:54 | view-count|i:1;logged-user|i:736;user-ip|s:15:"128.199.221.111";layer-group-user|s:0:"";authenticated-layer|s:3:"181";temp-user-name|s:7:"Anon 11";lat|i:51;lon|i:0; 
@@ -274,6 +258,9 @@ function handleServer(_req, _res) {
 		var cookies = parseCookies(req);
 		params.sessionId = cookies.ses;		//This is our custom cookie. The other option would be PHPSESSID
 		
+		params.ip = getRealIpAddress(req);
+		
+		
 		var jsonData = searchProcess(params, function(err, data) {
 			if(err) {
 				console.log(err);
@@ -356,6 +343,81 @@ function md5(data) {
 	return crypto.createHash('md5').update(data).digest("hex");
 }
 
+function getRealIpAddress(req) {
+
+	//This is simplistic version of the PHP one, which is below.
+	var ip = req.headers['x-forwarded-for'] || 
+     req.connection.remoteAddress || 
+     req.socket.remoteAddress ||
+     req.connection.socket.remoteAddress;
+
+	return ip;
+}
+
+/* Note - here is a fully correct version from the PHP, but I'm not sure we need it
+   to be this specific now, since we enforce a user id? Needs some checking.:
+	public function getRealIpAddr()
+	{
+		global $cnf;
+		
+		//Put all our proxy and servers in here
+		//so that we don't ever return our own ip
+	     $proxy_whitelisted = array();
+	     
+	     for($cnt = 0; $cnt< count($cnf['ips']); $cnt ++) {
+	       $proxy_whitelisted[] = $cnf['ips'][$cnt];
+	     }
+	     
+	     for($cnt = 0; $cnt< count($cnf['loadbalancer']['ips']); $cnt ++) {
+	       $proxy_whitelisted[] = $cnf['loadbalancer']['ips'][$cnt];
+	     }
+	 
+	 
+		//Check if ip from session - early out
+		if($_SESSION['user-ip']) {		
+			return $_SESSION['user-ip'];
+		}
+		
+		//Otherwise check from the various server methods
+		if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))   //to check ip is pass from proxy
+	    {
+	      $ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
+	    }
+	    elseif (!empty($_SERVER['HTTP_CLIENT_IP']))   //check ip from share internet
+	    {
+	      $ip=$_SERVER['HTTP_CLIENT_IP'];
+	    }
+	    else
+	    {
+	      $ip=$_SERVER['REMOTE_ADDR'];
+	    }
+	    $ips = explode(",", $ip);
+	    
+	    if(in_array($ips[0], $proxy_whitelisted)) {
+	       //Try the end of the array
+	        
+	       if(in_array(end($ips), $proxy_whitelisted)) {
+	          //Failed finding an ip address. NULL or a made up one?
+	          //Make up an ip starting with 192 trying to be 
+	          //fairly unique. TODO make this a genuinely
+	          //unique uuid and split off from ip address.
+	          // at the moment use a month and user agent
+	          // differentiator. 
+	          $us = md5($_SERVER['HTTP_USER_AGENT'] . date('Ym'));
+	          $ip = "192." . ord($us[0]) . '.' . ord($us[1]) . '.' . ord($us[2]);
+	          return $ip; 
+	       } else {
+	          return end($ips);
+	       }
+	    }
+	    
+	    return $ips[0];
+	}
+	*/
+
+
+
+
 
 function foundLayer(params,
 					 session, 
@@ -398,7 +460,7 @@ function foundLayer(params,
 	
 
 
-		//TODO: $ip = $ly->getRealIpAddr();
+		
 		
 	
 	
@@ -494,7 +556,7 @@ function foundLayer(params,
 
 				}
 
-				//TODO: date_default_timezone_set($server_timezone); //E.g. "UTC" GMT"
+				//In PHP here? date_default_timezone_set($server_timezone); //E.g. "UTC" GMT"
 				
 				
 				if(actualCnt <= mymaxResults) {			
@@ -558,8 +620,8 @@ function searchProcess(params, cb) {
 				//TODO increment and write the view-count session var.
 				
 				
-				var layer = 3;
-				var ip = "1.2.3.4";
+				var layer = 1;
+				var ip = params.ip;
 				var userCheck = "";
 				var initialRecords = 100;
 				var outputJSON = {};
