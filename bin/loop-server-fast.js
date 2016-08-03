@@ -68,8 +68,8 @@ if((process.argv)&&(process.argv[3])){
   lang = msg.defaultLanguage;
   
   
-  /*var time = msg.msgs[lang].time;
-  units = [
+  var time = msg.msgs[lang].time;
+  timeUnits = [
     { name: time.second, plural: time.seconds, limit: 60, in_seconds: 1 },
     { name: time.minute, plural: time.minutes, limit: 3600, in_seconds: 60 },
     { name: time.hour, plural: time.hours, limit: 86400, in_seconds: 3600  },
@@ -77,8 +77,9 @@ if((process.argv)&&(process.argv[3])){
     { name: time.week, plural: time.weeks, limit: 2629743, in_seconds: 604800  },
     { name: time.month, plural: time.months, limit: 31556926, in_seconds: 2629743 },
     { name: time.year, plural: time.years, limit: null, in_seconds: 31556926 }
-  ];*/
+  ];
   
+  /*
   timeUnits = [
     { name: "sec", plural: "secs", limit: 60, in_seconds: 1 },
     { name: "minute", plural: "mins", limit: 3600, in_seconds: 60 },
@@ -88,7 +89,7 @@ if((process.argv)&&(process.argv[3])){
     { name: "month", plural: "months", limit: 31556926, in_seconds: 2629743 },
     { name: "year", plural: "years", limit: null, in_seconds: 31556926 }
     ];
-  
+  */
   
 } else {
    console.log("Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]");
