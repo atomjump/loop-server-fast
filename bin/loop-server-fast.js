@@ -11,6 +11,11 @@ Usage:  node loop-server-fast.js config/path/config.json [-production]
 Testing https connection:    
 openssl s_client -CApath /etc/ssl/certs -connect yourdomain.com:5566
 
+
+TODO:
+Implement a mysql connection pool ala:
+https://codeforgeek.com/2015/01/nodejs-mysql-tutorial/
+
 */
 
 
@@ -195,31 +200,35 @@ function readSession(params, cb)
         
         params.connection.query("SELECT * FROM php_session WHERE session_id='" + cleanData(params.sessionId) + "'", function(err, rows, fields) {
         	
-        	if (err) throw err;
+        	if (err) {
+        		console.log("Database error:" + err);
+        		cb(null);
+        	} else {
         	
-        	if((rows[0])&&(rows[0].session_data)) {
-        		var params = rows[0].session_data.split(";");
-				for(var cnt=0; cnt< params.length; cnt++) {
+				if((rows[0])&&(rows[0].session_data)) {
+					var params = rows[0].session_data.split(";");
+					for(var cnt=0; cnt< params.length; cnt++) {
 				
-					var paramData = params[cnt].split("|");
-					if(paramData[1]) {
-						//There is some data about this param
-						var paramValues = paramData[1].split(":");
-						if(paramValues[0] == 'i') {
-							//An integer - value proceeds
-							var paramValue = paramValues[1];
-						} else {
-							//A string, [1] is the string length, [2] is the string itself
-							var paramValue = trimChar(paramValues[2], '"');
-						}
+						var paramData = params[cnt].split("|");
+						if(paramData[1]) {
+							//There is some data about this param
+							var paramValues = paramData[1].split(":");
+							if(paramValues[0] == 'i') {
+								//An integer - value proceeds
+								var paramValue = paramValues[1];
+							} else {
+								//A string, [1] is the string length, [2] is the string itself
+								var paramValue = trimChar(paramValues[2], '"');
+							}
 						
-						keyValues[paramData[0]] = paramValue;
-						if(verbose == true) console.log("Key:" + paramData[0] + " = " + paramValue);
-					} 		
+							keyValues[paramData[0]] = paramValue;
+							if(verbose == true) console.log("Key:" + paramData[0] + " = " + paramValue);
+						} 		
+					}
 				}
-			}
 			
-			cb(keyValues);
+				cb(keyValues);
+			}
 		});
 
 }
@@ -279,7 +288,7 @@ function handleServer(_req, _res) {
 			return;
 		}	
 			
-		var url = req.url.substring(req.url.indexOf("search-chat.php?") + 16);   //15 is length of 'search-chat.php'. We want the url as all the params after this. search-chat.php
+		var url = req.url.substring(req.url.indexOf("search-chat.php?") + 16);   //16 is length of 'search-chat.php'. We want the url as all the params after this. search-chat.php
 		//is the current standard request entry point
 		
 		if(verbose == true) console.log("Parsed to query string:" + url);
@@ -522,7 +531,12 @@ function foundLayer(params,
 		params.connection.query(sql, function(err, rows, fields) {
 
 
-		  if (err) throw err;
+		  if (err) {
+		  
+		  	console.log("Database query error:" + err);
+		  	cb(err, null);
+		  	return;
+		  }
 
 
 		  outputJSON.res = [];
@@ -666,6 +680,7 @@ function searchProcess(params, cb) {
 			if((!session['user-ip'])||(session['user-ip'] == '')) {
 				//No ip. Will have to revert back to the PHP version
 				cb("PHP", null);
+				return;
 			} else {
 			
 				//We're good to make a db request
@@ -692,7 +707,8 @@ function searchProcess(params, cb) {
 					params.connection.query(sql, function(err, rows, fields) {
 					
 						if(err) {
-							console.log("Error: " + err);
+							console.log("Database error: " + err);
+							return;
 						} else {
 							if((rows)&&(rows[0])) {
 								layer = rows[0].int_layer_id;
@@ -700,6 +716,7 @@ function searchProcess(params, cb) {
 								foundLayer(params, session, layer, ip, userCheck, initialRecords, outputJSON, debug, cb);
 							} else {
 								cb("PHP", null);
+								return;
 								//Unknown or new layer - head back to PHP
 								
 							
