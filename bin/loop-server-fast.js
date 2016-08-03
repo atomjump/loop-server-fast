@@ -342,8 +342,6 @@ function ago(timeStr) {
   
    var nowSecs = new Date().getTime();
    var diff = (nowSecs - recTimeSecs) / 1000;
-  	
-   console.log(diff);	
   
   var i = 0;
   var unit = {};
