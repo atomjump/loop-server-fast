@@ -41,13 +41,16 @@ const querystring = require('querystring');
 var httpsFlag = false;				//whether we are serving up https (= true) or http (= false)
 var serverOptions = {};				//default https server options (see nodejs https module)
 var listenPort = 3277;				//default listen port. Will get from the config readPort if it is set there
+var msg = {};
+var lang;
+var units = [];			//time units
 
 
 if((process.argv)&&(process.argv[2])){
   var loopServerConfig = process.argv[2];
 } else {
   
-  console.log("Usage: node loop-server-fast.js config/path/config.json [-production]");
+  console.log("Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]");
   process.exit(0);
 }
 
@@ -56,7 +59,34 @@ if((process.argv)&&(process.argv[2])){
 
 var config = JSON.parse(fs.readFileSync(loopServerConfig));
 
-if((process.argv[3]) && (process.argv[3] == '-production')){
+
+
+if((process.argv)&&(process.argv[3])){
+  //Get the messages and ago constants
+  var loopServerMessages = process.argv[3];
+  msg = JSON.parse(fs.readFileSync(loopServerMessages));
+  lang = msg.defaultLanguage;
+  
+  
+  var time = msg.msgs.lang.time;
+  units = [
+    { name: time.second, plural: time.seconds, limit: 60, in_seconds: 1 },
+    { name: time.minute, plural: time.minutes, limit: 3600, in_seconds: 60 },
+    { name: time.hour, plural: time.hours, limit: 86400, in_seconds: 3600  },
+    { name: time.day, plural: time.days, limit: 604800, in_seconds: 86400 },
+    { name: time.week, plural: time.weeks, limit: 2629743, in_seconds: 604800  },
+    { name: time.month, plural: time.months, limit: 31556926, in_seconds: 2629743 },
+    { name: time.year, plural: time.years, limit: null, in_seconds: 31556926 }
+  ];
+  
+  
+} else {
+   console.log("Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]");
+  process.exit(0);
+}
+
+
+if((process.argv[4]) && (process.argv[4] == '-production')){
   var cnf = config.production;
 } else {
   var cnf = config.staging;
@@ -86,6 +116,8 @@ if(cnf.httpsKey) {
 	}
 	
  }
+ 
+ 
  
 
 
@@ -290,8 +322,18 @@ function parseCookies (request) {
 
 
 function ago(timeStr) {
-	//TODO: time ago
-	return "1 day";
+   //Time ago
+  var diff = (new Date() - new Date(timeStr.getTime()*1000)) / 1000;
+  if (diff < 5) return "now";
+  
+  var i = 0, unit;
+  while (unit = units[i++]) {
+    if (diff < unit.limit || !unit.limit){
+      var diff =  Math.floor(diff / unit.in_seconds);
+      return diff + " " + (diff>1 ? unit.plural : unit.name);
+    }
+  };
+
 
 
 }
