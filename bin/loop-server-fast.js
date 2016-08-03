@@ -53,10 +53,13 @@ var currentDbServer = 0;
 if((process.argv)&&(process.argv[2])){
   var loopServerConfig = process.argv[2];
 } else {
-  if(process.env.npm_package_config_loopServerConfigFile
+  if(process.env.npm_package_config_loopServerConfigFile) {
+  	 var loopServerConfig = process.env.npm_package_config_loopServerConfigFile;
+  } else {
   
-  console.log("Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]");
-  process.exit(0);
+  		console.log("Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]");
+  		process.exit(0);
+  }
 }
 
 
@@ -99,7 +102,16 @@ if(((process.argv)&&(process.argv[3]))||(process.env.npm_package_config_loopServ
 if((process.argv[4]) && (process.argv[4] == '-production')){
   var cnf = config.production;
 } else {
-  var cnf = config.staging;
+  if(process.env.npm_package_config_production) {
+  	if(process.env.npm_package_config_production == true) {
+  		var cnf = config.production;
+  	} else {
+  		var cnf = config.staging;
+  	}
+  
+  } else {
+  	var cnf = config.staging;
+  }
 }
 
 //Use the port specified in the config
