@@ -13,9 +13,6 @@
   },
   "preferGlobal": "true",
   "scripts": {
-    "start": "",
-    "stop": "",
-    "postinstall": ""
   },
   "dependencies": {
     "async": "~1.4.2",
