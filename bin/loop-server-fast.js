@@ -324,14 +324,10 @@ function parseCookies (request) {
 function ago(mysqlTimeStr) {
    //Time ago
    // Split timestamp into [ Y, M, D, h, m, s ]
-   console.log(JSON.stringify(mysqlTimeStr));
-   var t = JSON.stringify(mysqlTimeStr).split(/[- :]/);
-
- // Apply each element to the Date function
-  var d = new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5]));
+   //console.log(JSON.stringify(mysqlTimeStr));
    
   //Get diff in seconds 
-  var diff = (new Date().getTime() - d.getTime()) / 1000;
+  var diff = (new Date().getTime() - mysqlTimeStr.getTime()) / 1000;
   
   var i = 0, unit;
   while (unit = units[i++]) {
