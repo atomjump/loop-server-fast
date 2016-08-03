@@ -1,4 +1,5 @@
 #!/bin/bash
-GLOBALNPM="$(npm prefix -global)"
-cd "${GLOBALNPM}/lib/node_modules/loop-server-fast"
-npm run
+cd "$(npm prefix -global)/lib/node_modules/loop-server-fast/"
+npm start
+
+

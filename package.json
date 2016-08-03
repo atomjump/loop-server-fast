@@ -8,9 +8,9 @@
   },
   "config": {
   	 "loopServerConfigFile": "",
-  	 "loopServerMessagesFile": ""
+  	 "loopServerMessagesFile": "",
   	 "production": false  
-  }
+  },
   "preferGlobal": "true",
   "scripts": {
     "start": "",
