@@ -36,6 +36,7 @@ var async = require('async');
 var mysql = require('mysql');
 var os = require('os');
 const querystring = require('querystring');
+var crypto = require('crypto');
 
 
 var httpsFlag = false;				//whether we are serving up https (= true) or http (= false)
@@ -79,17 +80,6 @@ if((process.argv)&&(process.argv[3])){
     { name: time.year, plural: time.years, limit: null, in_seconds: 31556926 }
   ];
   
-  /*
-  timeUnits = [
-    { name: "sec", plural: "secs", limit: 60, in_seconds: 1 },
-    { name: "minute", plural: "mins", limit: 3600, in_seconds: 60 },
-    { name: "hour", plural: "hours", limit: 86400, in_seconds: 3600  },
-    { name: "day", plural: "days", limit: 604800, in_seconds: 86400 },
-    { name: "week", plural: "weeks", limit: 2629743, in_seconds: 604800  },
-    { name: "month", plural: "months", limit: 31556926, in_seconds: 2629743 },
-    { name: "year", plural: "years", limit: null, in_seconds: 31556926 }
-    ];
-  */
   
 } else {
    console.log("Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]");
@@ -361,6 +351,193 @@ function ago(timeStr) {
 
 }
 
+function md5(data) {
+
+	return crypto.createHash('md5').update(data).digest("hex");
+}
+
+
+function foundLayer(params,
+					 session, 
+					 layer, 
+					 ip, 
+					 userCheck, 
+					 initialRecords, 
+					 outputJSON, 
+					 debug, 
+					 cb)  {
+
+	if((params.units) && (params.units != '')) {
+					units = params.units;
+		}
+
+		if((params.dbg) && (params.dbg == 'true')) {
+			debug = true;
+		} else {
+			debug = false;
+		}
+	
+		if(session['logged-user']) {
+			userCheck = " OR int_author_id = " + session['logged-user'] + " OR int_whisper_to_id = " + session['logged-user']; 
+	
+		}
+	
+		if(session['logged-group-user']) {
+			userChech = userCheck + " OR int_author_id = " + session['logged-group-user'] + " OR int_whisper_to_id = " + session['logged-group-user']; 
+	
+		}
+	
+		if((params.records) && (params.records < 100)) {
+			initialRecords = 100;	//min this can be - needs to be about 4 to 1 of private to public to start reducing the number of public messages visible
+		} else {
+			if(params.records) {
+				initialRecords = params.records;
+			}
+		}
+	
+	
+
+
+		//TODO: $ip = $ly->getRealIpAddr();
+		
+	
+	
+		var sql = "SELECT * FROM tbl_ssshout WHERE int_layer_id = " + layer + " AND enm_active = 'true' AND (var_whisper_to = '' OR ISNULL(var_whisper_to) OR var_whisper_to ='" + ip + "' OR var_ip = '" + ip + "' " + userCheck + ") ORDER BY int_ssshout_id DESC LIMIT " + initialRecords;
+		console.log("Query: " + sql);
+	
+		connection.query(sql, function(err, rows, fields) {
+
+
+		  if (err) throw err;
+
+
+		  outputJSON.res = [];
+		  outputJSON.ses = params.sessionId;
+		  
+		  
+		  var mymaxResults = rows.length;
+		  if(mymaxResults > params.records) {
+			 mymaxResults = params.records;	//limit number to records requested
+			 var more = true;   //show more flag for
+		  }
+		  var actualCnt = 0;
+		  
+		  
+		
+		  
+		  for(var cnt = 0; cnt< rows.length; cnt++) {
+		  
+			  var whisper = true;		//default
+			  var authorIP = rows[cnt].var_ip;
+			  var authorUserID = rows[cnt].int_author_id;
+			  var combinedAuthor = authorIP;
+				if(authorUserID) {
+					combinedAuthor = combinedAuthor +  ":" + authorUserID;
+				}
+		
+				var whisperToIP = rows[cnt].var_whisper_to;
+				var whisperToUserID = rows[cnt].int_whisper_to_id;
+	
+	
+	
+			//If no whispering, or are whispering but to the viewer's ip address, or from the viewer's own ip
+			if((whisperToIP == '')||		//ie. public
+			   ((whisperToIP == ip)&&(whisperToUserID == null))||	//private but no user id known
+			   (whisperToUserID == session['logged-user'])||  //talk direct to owner
+			   ((authorIP == ip)&&(authorUserID == null))||  				//authored by this ip no user known of author
+			   (authorUserID == session['logged-user'])||						//authored by this viewer
+			   ((session['logged-group-user'] != "")&&(whisperToUserID != "") && (whisperToUserID == session['logged-group-user']))) {				//private message to group
+
+				//Right actually going to include message - now decide if whispering or public
+				
+				if(((whisperToIP == ip) && (whisperToUserID == null))||		//if it was a whisper intended for our ip but unknown user
+						(whisperToUserID == session['logged-user'])||				//or a whisper specifically for us
+				   ((authorIP == ip) && ((whisperToIP != '')||(whisperToUserID)))||  //or def a whisper by viewer
+				   (authorUserID == session['logged-user'] && ((whisperToIP != '')|| (whisperToUserID)))) { //or a whisper by viewer logged in
+					//This is a whisper to you or from you, use 1/3 font size
+					whisper = true;
+				} else {
+					//A shout
+					whisper = false;
+				}
+				
+				if(session['logged-group-user']) {
+					if(whisperToUserID == session['logged-group-user']) {
+						whisper = true;
+				
+					}
+				}
+			
+				if(!session['logged-user']) {
+					//Force a blank user to see only public requests, until he has actually commented. 
+					whisper = false;		
+			
+				}
+				 
+
+
+				var shade = rows[cnt].int_ssshout_id %2;
+				if(layer == 0) {
+					//Public layer
+					if(shade == 0) {
+						bgcolor = "public-light";  
+					} else {
+						bgcolor = "public-dark"; 
+					}
+				} else {
+					//Private layer - different colours
+					if(shade == 0) {
+						bgcolor = "private-light"; 
+					} else {
+						bgcolor = "private-dark"; 
+					}
+
+				}
+
+				//TODO: date_default_timezone_set($server_timezone); //E.g. "UTC" GMT"
+				
+				
+				if(actualCnt <= mymaxResults) {			
+		  
+		  
+		  
+			
+					var newEntry = {
+						'text': rows[cnt].var_shouted_processed,
+						'lat': rows[cnt].latitude,
+						'lon': rows[cnt].longtiude,
+						'dist': rows[cnt].dist,
+						'ago': ago(rows[cnt].date_when_shouted),
+						'whisper': whisper
+					
+					}
+			
+					outputJSON.res.push(newEntry);
+					
+					actualCnt ++;		//Increment the actual result count
+				}
+				
+				
+			}	//End of valid message					  
+		  
+		  }		//End of for loop
+
+		  cb(null, outputJSON);			//No errors
+
+			
+
+
+		  //connection.end();
+
+		
+		});	//End of query
+
+
+}
+
+
+
+
 function searchProcess(params, cb) {
 
 	//Get the session data
@@ -389,23 +566,41 @@ function searchProcess(params, cb) {
 				var debug = false;
 
 	
-				//PHP
-				//TODO: date_default_timezone_set($server_timezone);
+				
+				//Is this needed? date_default_timezone_set($server_timezone);
 
 				if((params.passcode) && (params.passcode != '')||((params.reading) && (params.reading != ''))) { 
-				//TODO: forward to PHP
-				/*$layer_info = $ly->get_layer_id($_REQUEST['passcode'], $_REQUEST['reading']);
-				if($layer_info) {
-					$layer = $layer_info['int_layer_id'];
-				} else {
-					//Create a new layer - TODO: don't allow layers so easily
-					$layer = $ly->new_layer($_REQUEST['passcode'], 'public'); 
 					
-					//Given this is a new layer - the first user is the correct user
-					$lg = new cls_login();
-					$lg->update_subscriptions(clean_data($_REQUEST['whisper_site']), $layer);	
 					
-				}*/
+					var sql = "SELECT int_layer_id FROM tbl_layer WHERE passcode = '" + md5(params.passcode) + "'";
+					
+					connection.query(sql, function(err, rows, fields) {
+					
+						if(err) {
+							console.log("Error: " + err);
+						} else {
+							if((rows)&&(rows[0])) {
+								layer = rows[0].int_layer_id;
+								
+								foundLayer(params, session, layer, ip, userCheck, initialRecords, outputJSON, debug, cb);
+							} else {
+							//Unknown or new layer
+								//TODO: shift off to PHP request
+								/*$layer = $ly->new_layer($_REQUEST['passcode'], 'public'); 
+					
+								//Given this is a new layer - the first user is the correct user
+								$lg = new cls_login();
+								$lg->update_subscriptions(clean_data($_REQUEST['whisper_site']), $layer);	
+								*/
+							
+							}
+						}
+					});
+					
+					
+					
+
+					
 				
 				} else {	//End of passcode not = ''
 
@@ -414,173 +609,13 @@ function searchProcess(params, cb) {
 					} else {
 						layer = 1;		//Default to about layer
 					}
-				}
-
-				if((params.units) && (params.units != '')) {
-					units = params.units;
-				}
-
-				if((params.dbg) && (params.dbg == 'true')) {
-					debug = true;
-				} else {
-					debug = false;
-				}
-			
-				if(session['logged-user']) {
-					userCheck = " OR int_author_id = " + session['logged-user'] + " OR int_whisper_to_id = " + session['logged-user']; 
-			
-				}
-			
-				if(session['logged-group-user']) {
-					userChech = userCheck + " OR int_author_id = " + session['logged-group-user'] + " OR int_whisper_to_id = " + session['logged-group-user']; 
-			
-				}
-			
-				if((params.records) && (params.records < 100)) {
-					initialRecords = 100;	//min this can be - needs to be about 4 to 1 of private to public to start reducing the number of public messages visible
-				} else {
-					if(params.records) {
-						initialRecords = params.records;
-					}
-				}
-			
-			
-
-
-				//TODO: $ip = $ly->getRealIpAddr();
-				
-			
-			
-				var sql = "SELECT * FROM tbl_ssshout WHERE int_layer_id = " + layer + " AND enm_active = 'true' AND (var_whisper_to = '' OR ISNULL(var_whisper_to) OR var_whisper_to ='" + ip + "' OR var_ip = '" + ip + "' " + userCheck + ") ORDER BY int_ssshout_id DESC LIMIT " + initialRecords;
-				console.log("Query: " + sql);
-			
-				connection.query(sql, function(err, rows, fields) {
-  
-  
-				  if (err) throw err;
-  
-				  //console.log(rows[0].var_shouted);
-
-				  outputJSON.res = [];
-				  outputJSON.ses = params.sessionId;
-				  
-				  
-				  var mymaxResults = rows.length;
-				  if(mymaxResults > params.records) {
-					 mymaxResults = params.records;	//limit number to records requested
-					 var more = true;   //show more flag for
-				  }
-				  var actualCnt = 0;
-				  
-				  
-				
-				  
-				  for(var cnt = 0; cnt< rows.length; cnt++) {
-				  
-				  	  var whisper = true;		//default
-				      var authorIP = rows[cnt].var_ip;
-					  var authorUserID = rows[cnt].int_author_id;
-					  var combinedAuthor = authorIP;
-						if(authorUserID) {
-							combinedAuthor = combinedAuthor +  ":" + authorUserID;
-						}
-				
-						var whisperToIP = rows[cnt].var_whisper_to;
-						var whisperToUserID = rows[cnt].int_whisper_to_id;
-			
-			
-			
-					//If no whispering, or are whispering but to the viewer's ip address, or from the viewer's own ip
-					if((whisperToIP == '')||		//ie. public
-					   ((whisperToIP == ip)&&(whisperToUserID == null))||	//private but no user id known
-					   (whisperToUserID == session['logged-user'])||  //talk direct to owner
-					   ((authorIP == ip)&&(authorUserID == null))||  				//authored by this ip no user known of author
-					   (authorUserID == session['logged-user'])||						//authored by this viewer
-					   ((session['logged-group-user'] != "")&&(whisperToUserID != "") && (whisperToUserID == session['logged-group-user']))) {				//private message to group
-	
-						//Right actually going to include message - now decide if whispering or public
-						
-						if(((whisperToIP == ip) && (whisperToUserID == null))||		//if it was a whisper intended for our ip but unknown user
-								(whisperToUserID == session['logged-user'])||				//or a whisper specifically for us
-						   ((authorIP == ip) && ((whisperToIP != '')||(whisperToUserID)))||  //or def a whisper by viewer
-						   (authorUserID == session['logged-user'] && ((whisperToIP != '')|| (whisperToUserID)))) { //or a whisper by viewer logged in
-							//This is a whisper to you or from you, use 1/3 font size
-							whisper = true;
-						} else {
-							//A shout
-							whisper = false;
-						}
-						
-						if(session['logged-group-user']) {
-							if(whisperToUserID == session['logged-group-user']) {
-								whisper = true;
-						
-							}
-						}
 					
-						if(!session['logged-user']) {
-							//Force a blank user to see only public requests, until he has actually commented. 
-							whisper = false;		
-					
-						}
-						 
-	
-		
-						var shade = rows[cnt].int_ssshout_id %2;
-						if(layer == 0) {
-							//Public layer
-							if(shade == 0) {
-								bgcolor = "public-light";  
-							} else {
-								bgcolor = "public-dark"; 
-							}
-						} else {
-							//Private layer - different colours
-							if(shade == 0) {
-								bgcolor = "private-light"; 
-							} else {
-								bgcolor = "private-dark"; 
-							}
-		
-						}
-		
-						//TODO: date_default_timezone_set($server_timezone); //E.g. "UTC" GMT"
-						
-						
-						if(actualCnt <= mymaxResults) {			
-				  
-				  
-				  
-				  	
-				  			var newEntry = {
-				  				'text': rows[cnt].var_shouted_processed,
-				  				'lat': rows[cnt].latitude,
-				  				'lon': rows[cnt].longtiude,
-				  				'dist': rows[cnt].dist,
-				  				'ago': ago(rows[cnt].date_when_shouted),
-				  				'whisper': whisper
-				  			
-				  			}
-				  	
-				  			outputJSON.res.push(newEntry);
-				  			
-				  			actualCnt ++;		//Increment the actual result count
-				  		}
-				  		
-				  		
-				  	}	//End of valid message					  
-				  
-				  }		//End of for loop
-
-				  cb(null, outputJSON);			//No errors
-
-				   	
-
-  
-				  //connection.end();
+					foundLayer(params, session, layer, ip, userCheck, initialRecords, outputJSON, debug, cb);
+				}
+				
+				
 
 				
-				});	//End of query
 			}	//End of do have an ip
 			
 			
