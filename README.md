@@ -63,7 +63,7 @@ sudo ufw allow 3277/tcp
 # Going live
 
 Then, to your Loop Server's config/config.json, add the following
-```
+```javascript
 {
    "production": {
 	  ...
@@ -77,7 +77,7 @@ Then, to your Loop Server's config/config.json, add the following
 
 (note, remove the [comments in square brackets above])
 
-Switch the NodeJS server to the production settings with:
+Switch the NodeJS server to the Loop Server's production settings with:
 
 ```
 npm config set loop-server-fast:production true
