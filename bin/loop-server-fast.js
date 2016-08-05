@@ -487,7 +487,7 @@ function callPHP(url, res) {
 	//and write it out to the requester
 
 	
-	res.writeHead(200, {'content-type': 'text/plain'});
+	
 	res.end("Location: " + url);
 	
 	/*
