@@ -486,10 +486,21 @@ function callPHP(url, res) {
 	//and write it out to the requester
 
 	var myres = res;
+	
+	var agent;
+
+	agentOptions = {
+	  host: 'www.example.com'
+	, port: '443'
+	, path: '/'
+	, rejectUnauthorized: false
+	};
+
+	agent = new https.Agent(agentOptions);
 
 	console.log("Requesting " + url);
 
-	request(url, function (error, response, body) {
+	request({ url : url, rejectUnhauthorized : false }, function (error, response, body) {
 		
 		console.log("Got a response:" + JSON.stringify(body) + "Response:" +  JSON.stringify(response) + " Error:" + error);
 		if (!error && response.statusCode == 200) {
@@ -518,8 +529,10 @@ function callPHP(url, res) {
 			
 			
 		} else {
+			console.log("Error:" + error);
 			myres.statusCode = 400;
 			myres.end("Sorry, server isn't responding");
+			
 			return;
 		
 		}
