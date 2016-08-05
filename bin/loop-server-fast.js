@@ -317,6 +317,8 @@ function handleServer(_req, _res) {
 		currentDbServer ++;
 		if(currentDbServer >= cnf.db.hosts.length) currentDbServer = 0;
 		
+		//Double up on this
+		var myres = res;
 		
 		var jsonData = searchProcess(params, function(err, data) {
 			if(err) {
@@ -324,7 +326,7 @@ function handleServer(_req, _res) {
 					//Call the PHP version of this script
 					
 					var fullUrl = cnf.webRoot + path.join('/', defaultPHPScript) + url;
-					callPHP(fullUrl, res);
+					callPHP(fullUrl, myres);
 					return;
 				}
 			
@@ -485,6 +487,8 @@ function callPHP(url, res) {
 
 	var myres = res;
 
+	console.log("Requesting " + url);
+
 	request(url, function (error, phpres, body) {
 		
 		if (!error && phpres.statusCode == 200) {
@@ -514,7 +518,7 @@ function callPHP(url, res) {
 			
 		} else {
 			myres.statusCode = 400;
-			myres.end();
+			myres.end("Sorry, server isn't responding");
 			return;
 		
 		}
