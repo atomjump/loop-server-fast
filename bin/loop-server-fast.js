@@ -489,10 +489,10 @@ function callPHP(url, res) {
 
 	console.log("Requesting " + url);
 
-	request(url, function (error, phpres, body) {
+	request(url, function (error, response, body) {) {
 		
-		console.log("Got a response:" + JSON.stringify(body));
-		if (!error && phpres.statusCode == 200) {
+		console.log("Got a response:" + JSON.stringify(body) + "Response:" JSON.stringify(response) + " Error:" + error);
+		if (!error && response.statusCode == 200) {
 			console.log(body); // Show the HTML for the Modulus homepage.
 			
 			myres.on('error', function(err){
