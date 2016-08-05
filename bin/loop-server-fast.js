@@ -489,7 +489,7 @@ function callPHP(url, res) {
 
 	console.log("Requesting " + url);
 
-	request(url, function (error, response, body) {) {
+	request(url, function (error, response, body) {
 		
 		console.log("Got a response:" + JSON.stringify(body) + "Response:" JSON.stringify(response) + " Error:" + error);
 		if (!error && response.statusCode == 200) {
