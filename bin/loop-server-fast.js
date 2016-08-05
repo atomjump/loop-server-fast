@@ -47,7 +47,7 @@ var listenPort = 3277;				//default listen port. Will get from the config readPo
 var msg = {};
 var lang;
 var timeUnits;			//time units
-var verbose = true;
+var verbose = false;
 var currentDbServer = 0;
 var usage = "Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]\n\nOr:\n\nnpm config set loop-server-fast:configFile /path/to/your/loop/server/config.json\nnpm config set loop-server-fast:messagesFile /path/to/your/loop/server/messages.json\n[npm config set loop-server-fast:production true]\nnpm run start\n\n";
 var defaultPHPScript = "search-chat.php?";
@@ -492,50 +492,6 @@ function callPHP(url, res) {
 	});
 	res.end();
 	
-	
-	/*
-	var myres = res;
-	
-
-	console.log("Requesting PHP:" + url);
-
-	request({ url : url, rejectUnauthorized : false }, function (error, response, body) {
-		
-		if (!error && response.statusCode == 200) {
-			//if(verbose == true) console.log(body); // Show the HTML for the Modulus homepage.
-			
-			myres.on('error', function(err){
-					//Handle the errors here
-					myres.statusCode = 400;
-					myres.end();
-					return;
-			})
-
-			myres.writeHead(200, {'content-type': 'text/plain'});  
-	  
-	  
-			myres.end(body, function(err) {
-					  //Wait until finished sending, then delete locally
-					  if(err) {
-						 console.log(err);
-					  } else {
-						//success, do nothing
-						
-					   }
-					  return; 
-			});
-			
-			
-		} else {
-			console.log("Error:" + error);
-			myres.statusCode = 400;
-			myres.end("Sorry, server isn't responding");
-			
-			return;
-		
-		}
-		
-	})*/
 
 }
 
