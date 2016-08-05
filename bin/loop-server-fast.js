@@ -731,6 +731,7 @@ function searchProcess(params, cb) {
 			//Already logged in, but check if we know the ip address
 			if((!session['user-ip'])||(session['user-ip'] == '')) {
 				//No ip. Will have to revert back to the PHP version
+				console.log('No ip. Going to PHP');
 				cb("PHP", null);
 				return;
 			} else {
@@ -740,6 +741,7 @@ function searchProcess(params, cb) {
 				//If this is the first request this session, we need to use the PHP
 				//version to ensure we have registered the count
 				if(session['view-count'] == 0) {
+					console.log("view-count = " + session['view-count'] + " Going to PHP");
 					cb("PHP", null);
 					return;
 				}
@@ -771,6 +773,7 @@ function searchProcess(params, cb) {
 								
 								foundLayer(params, session, layer, ip, userCheck, initialRecords, outputJSON, debug, cb);
 							} else {
+								console.log("No layer " + md5(params.passcode) + " - likely new. Going to PHP");
 								cb("PHP", null);
 								return;
 								//Unknown or new layer - head back to PHP
@@ -804,7 +807,9 @@ function searchProcess(params, cb) {
 			
 		} else {
 			//Not logged in - revert back to the PHP version
+			console.log("Not logged in - back to PHP version");
 			cb("PHP", null);
+			return;
 		
 		}  
 	
