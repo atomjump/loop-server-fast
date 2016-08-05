@@ -204,7 +204,7 @@ function readSession(params, cb)
         */
         var keyValues = {};
         
-        if(verbose == true) console("SessionID" + cleanData(params.sessionId));
+        if(verbose == true) console.log("SessionID" + cleanData(params.sessionId));
         
         params.connection.query("SELECT * FROM php_session WHERE session_id='" + cleanData(params.sessionId) + "'", function(err, rows, fields) {
         	
@@ -495,7 +495,7 @@ function callPHP(url, res) {
 	request({ url : url, rejectUnauthorized : false }, function (error, response, body) {
 		
 		if (!error && response.statusCode == 200) {
-			if(verbose == true) console.log(body); // Show the HTML for the Modulus homepage.
+			//if(verbose == true) console.log(body); // Show the HTML for the Modulus homepage.
 			
 			myres.on('error', function(err){
 					//Handle the errors here
