@@ -353,7 +353,7 @@ function handleServer(_req, _res) {
 					 console.log(err);
 				  } else {
 					//success, do nothing
-			
+					process.stdout.write(".");  	//Show successful pings
 				   }
 			  });
 		});		//End of process
@@ -511,7 +511,7 @@ function callPHP(url, res) {
 						 console.log(err);
 					  } else {
 						//success, do nothing
-						process.stdout.write(".");  	//Show successful pings
+						
 					   }
 					  return; 
 			});
