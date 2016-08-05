@@ -685,8 +685,12 @@ function searchProcess(params, cb) {
 			
 				//We're good to make a db request
 				
-				//TODO increment and write the view-count session var.
-				
+				//If this is the first request this session, we need to use the PHP
+				//version to ensure we have registered the count
+				if(session['view-count'] == 0) {
+					cb("PHP", null);
+					return;
+				}
 				
 				var layer = 1;
 				var ip = params.ip;

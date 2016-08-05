@@ -40,6 +40,11 @@
     "shredfile": "^0.2.0",
     "upath": "*"
   },
+  "repository" : { 
+     "type" : "git",
+     "url" : "https://github.com/atomjump/loop-server-fast"
+  },
+  "license": "MIT",
   "main": "bin/loop-server-fast.js",
   "optionalDependencies": {},
   "engines": {
