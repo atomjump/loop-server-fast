@@ -485,7 +485,7 @@ function callPHP(url, res) {
 		.pipe(res)
 		.on('error', function(error){
 			console.log(error);
-		};
+		});
 
 }
 
