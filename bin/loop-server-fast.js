@@ -491,7 +491,7 @@ function callPHP(url, res) {
 
 	request(url, function (error, response, body) {
 		
-		console.log("Got a response:" + JSON.stringify(body) + "Response:" JSON.stringify(response) + " Error:" + error);
+		console.log("Got a response:" + JSON.stringify(body) + "Response:" +  JSON.stringify(response) + " Error:" + error);
 		if (!error && response.statusCode == 200) {
 			console.log(body); // Show the HTML for the Modulus homepage.
 			
