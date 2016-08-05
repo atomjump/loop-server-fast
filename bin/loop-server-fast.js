@@ -324,7 +324,7 @@ function handleServer(_req, _res) {
 					//Call the PHP version of this script
 					
 					var fullUrl = cnf.webRoot + path.join('/', defaultPHPScript) + url;
-					callPHP(fullUrl);
+					callPHP(fullUrl, res);
 					return;
 				}
 			
