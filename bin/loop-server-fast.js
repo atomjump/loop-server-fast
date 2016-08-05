@@ -480,12 +480,37 @@ function getRealIpAddress(req) {
 
 
 function callPHP(url, res) {
+	//Reads in from the PHP script url for a .jsonp response (plain text)
+	//and write it out to the requester
 
-	request(url)
-		.pipe(res)
-		.on('error', function(error){
-			console.log(error);
-		});
+	request(url, function (error, phpres, body) {
+		
+		if (!error && phpres.statusCode == 200) {
+					if(verbose == true) console.log(body); // Show the HTML for the Modulus homepage.
+			
+					res.on('error', function(err){
+					//Handle the errors here
+					res.statusCode = 400;
+					res.end();
+			})
+
+			res.writeHead(200, {'content-type': 'text/plain'});  
+	  
+	  
+			res.end(body, function(err) {
+					  //Wait until finished sending, then delete locally
+					  if(err) {
+						 console.log(err);
+					  } else {
+						//success, do nothing
+			
+					   }
+			});
+			
+			
+		}
+		
+	})
 
 }
 
