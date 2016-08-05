@@ -215,6 +215,8 @@ function readSession(params, cb)
         		
         	
 				if((rows[0])&&(rows[0].session_data)) {
+				
+					if(verbose == true) console.log("Session data:" + rows[0].session_data);
 					var params = rows[0].session_data.split(";");
 					for(var cnt=0; cnt< params.length; cnt++) {
 				
