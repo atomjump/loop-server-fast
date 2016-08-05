@@ -481,7 +481,11 @@ function getRealIpAddress(req) {
 
 function callPHP(url, res) {
 
-	request.get(url).pipe(res);
+	request(url)
+		.pipe(res)
+		.on('error', function(error){
+			console.log(error);
+		};
 
 }
 
