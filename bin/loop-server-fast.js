@@ -50,6 +50,8 @@ var timeUnits;			//time units
 var verbose = false;
 var currentDbServer = 0;
 var usage = "Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]\n\nOr:\n\nnpm config set loop-server-fast:configFile /path/to/your/loop/server/config.json\nnpm config set loop-server-fast:messagesFile /path/to/your/loop/server/messages.json\n[npm config set loop-server-fast:production true]\nnpm run start\n\n";
+var defaultPHPScript = "search-chat.php?";
+var defaultPHPScriptLen = defaultPHPScript.length;
 
 
 if((process.argv)&&(process.argv[2])){
@@ -287,13 +289,13 @@ function handleServer(_req, _res) {
 		if(verbose == true) console.log("Requesting: " + req.url);
 		
 		//It must include search-chat.php or it is ignored.
-		if(req.url.indexOf("search-chat.php?") < 0) {
+		if(req.url.indexOf(defaultPHPScript) < 0) {
 			res.writeHead(200, {'content-type': 'text/plain'});  
 			res.end("Not available");
 			return;
 		}	
 			
-		var url = req.url.substring(req.url.indexOf("search-chat.php?") + 16);   //16 is length of 'search-chat.php'. We want the url as all the params after this. search-chat.php
+		var url = req.url.substring(req.url.indexOf(defaultPHPScript) + defaultPHPScriptLen);   //16 is length of 'search-chat.php'. We want the url as all the params after this. search-chat.php
 		//is the current standard request entry point
 		
 		if(verbose == true) console.log("Parsed to query string:" + url);
@@ -321,7 +323,7 @@ function handleServer(_req, _res) {
 				if(err == 'PHP') {
 					//Call the PHP version of this script
 					
-					var fullUrl = path.join(cnf.webRoot, url);
+					var fullUrl = path.join(cnf.webRoot, defaultPHPScript, url);
 					callPHP(fullUrl);
 					return;
 				}
