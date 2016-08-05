@@ -486,6 +486,11 @@ function callPHP(url, res) {
 	//Reads in from the PHP script url for a .jsonp response (plain text)
 	//and write it out to the requester
 
+	
+	res.writeHead(200, {'content-type': 'text/plain'});
+	res.end("Location: " + url);
+	
+	/*
 	var myres = res;
 	
 
@@ -527,7 +532,7 @@ function callPHP(url, res) {
 		
 		}
 		
-	})
+	})*/
 
 }
 
