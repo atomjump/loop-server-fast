@@ -488,13 +488,12 @@ function callPHP(url, res) {
 	var myres = res;
 	
 
-	console.log("Requesting " + url);
+	console.log("Requesting PHP:" + url);
 
 	request({ url : url, rejectUnauthorized : false }, function (error, response, body) {
 		
-		console.log("Got a response:" + JSON.stringify(body) + "Response:" +  JSON.stringify(response) + " Error:" + error);
 		if (!error && response.statusCode == 200) {
-			console.log(body); // Show the HTML for the Modulus homepage.
+			if(verbose == true) console.log(body); // Show the HTML for the Modulus homepage.
 			
 			myres.on('error', function(err){
 					//Handle the errors here
