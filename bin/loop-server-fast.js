@@ -483,21 +483,24 @@ function callPHP(url, res) {
 	//Reads in from the PHP script url for a .jsonp response (plain text)
 	//and write it out to the requester
 
+	var myres = res;
+
 	request(url, function (error, phpres, body) {
 		
 		if (!error && phpres.statusCode == 200) {
-					console.log(body); // Show the HTML for the Modulus homepage.
+			console.log(body); // Show the HTML for the Modulus homepage.
 			
-					res.on('error', function(err){
+			myres.on('error', function(err){
 					//Handle the errors here
-					res.statusCode = 400;
-					res.end();
+					myres.statusCode = 400;
+					myres.end();
+					return;
 			})
 
-			res.writeHead(200, {'content-type': 'text/plain'});  
+			myres.writeHead(200, {'content-type': 'text/plain'});  
 	  
 	  
-			res.end(body, function(err) {
+			myres.end(body, function(err) {
 					  //Wait until finished sending, then delete locally
 					  if(err) {
 						 console.log(err);
@@ -510,8 +513,8 @@ function callPHP(url, res) {
 			
 			
 		} else {
-			res.statusCode = 400;
-			res.end();
+			myres.statusCode = 400;
+			myres.end();
 			return;
 		
 		}
