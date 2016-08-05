@@ -491,6 +491,7 @@ function callPHP(url, res) {
 
 	request(url, function (error, phpres, body) {
 		
+		console.log("Got a response:" + JSON.stringify(body));
 		if (!error && phpres.statusCode == 200) {
 			console.log(body); // Show the HTML for the Modulus homepage.
 			
