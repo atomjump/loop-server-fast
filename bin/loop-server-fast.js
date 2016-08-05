@@ -165,10 +165,15 @@ for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
 
 }
 
+function escapeRegExp(str) {
+    return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+}
+
+
 function cleanData(str)
 {
-	//TODO clean for database requests
-	return str;
+	//Clean for database requests
+	return escapeRegExp(str);
 }
 
 
@@ -316,7 +321,7 @@ function handleServer(_req, _res) {
 				if(err == 'PHP') {
 					//Call the PHP version of this script
 					
-					var fullUrl = joinPath(cnf.webRoot, url);
+					var fullUrl = path.join(cnf.webRoot, url);
 					callPHP(fullUrl);
 					return;
 				}
