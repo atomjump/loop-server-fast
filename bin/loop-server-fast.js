@@ -204,6 +204,7 @@ function readSession(params, cb)
         */
         var keyValues = {};
         
+        if(verbose == true) console("SessionID" + cleanData(params.sessionId));
         
         params.connection.query("SELECT * FROM php_session WHERE session_id='" + cleanData(params.sessionId) + "'", function(err, rows, fields) {
         	
@@ -211,6 +212,7 @@ function readSession(params, cb)
         		console.log("Database error:" + err);
         		cb(null);
         	} else {
+        		
         	
 				if((rows[0])&&(rows[0].session_data)) {
 					var params = rows[0].session_data.split(";");
