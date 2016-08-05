@@ -486,7 +486,7 @@ function callPHP(url, res) {
 	request(url, function (error, phpres, body) {
 		
 		if (!error && phpres.statusCode == 200) {
-					if(verbose == true) console.log(body); // Show the HTML for the Modulus homepage.
+					console.log(body); // Show the HTML for the Modulus homepage.
 			
 					res.on('error', function(err){
 					//Handle the errors here
@@ -503,11 +503,17 @@ function callPHP(url, res) {
 						 console.log(err);
 					  } else {
 						//success, do nothing
-			
+						
 					   }
+					  return; 
 			});
 			
 			
+		} else {
+			res.statusCode = 400;
+			res.end();
+			return;
+		
 		}
 		
 	})
