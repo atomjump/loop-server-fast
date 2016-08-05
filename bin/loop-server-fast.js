@@ -323,7 +323,7 @@ function handleServer(_req, _res) {
 				if(err == 'PHP') {
 					//Call the PHP version of this script
 					
-					var fullUrl = path.join(cnf.webRoot, defaultPHPScript) + url;
+					var fullUrl = cnf.webRoot + path.join('/', defaultPHPScript) + url;
 					callPHP(fullUrl);
 					return;
 				}
