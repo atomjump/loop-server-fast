@@ -307,10 +307,7 @@ function handleServer(_req, _res) {
 		if(verbose == true) console.log("Query params = " + JSON.stringify(params));
 		
 		var cookies = parseCookies(req);
-		params.sessionId = cookies.ses;		//This is our custom cookie. The other option would be PHPSESSID
-		if(params.sessionId) {
-			params.sessionId = cookies.PHPSESSID;
-		}
+		params.sessionId = cookies.PHPSESSID;		//This is our custom cookie. 
 		
 		params.ip = getRealIpAddress(req);
 		
