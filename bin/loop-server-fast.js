@@ -309,7 +309,7 @@ function handleServer(_req, _res) {
 		var cookies = parseCookies(req);
 		params.sessionId = cookies.PHPSESSID;		//This is our custom cookie. 
 		
-		params.ip = getRealIpAddress(req);
+		params.ip = getFakeIpAddress(params.sessionId);
 		
 		//Choose a random db connection
 		params.connection = connections[currentDbServer];
@@ -410,6 +410,20 @@ function ago(timeStr) {
 function md5(data) {
 
 	return crypto.createHash('md5').update(data).digest("hex");
+}
+
+
+function getFakeIpAddress(sessionId) {
+	//This is a copy of the PHP version - it creates an ip with 192.a.b.c where
+	//a = ASCII value of sessionId's first character
+	//b = ASCII value of sessionId's second character
+	//c = ASCII value of sessionId's third character
+
+    var ip = "192." + parseInt(sessionId.charCodeAt(0)) + "." +
+    				parseInt(sessionId.charCodeAt(1)) + "." +
+    				parseInt(sessionId.charCodeAt(2));
+	return ip;
+
 }
 
 function getRealIpAddress(req) {
