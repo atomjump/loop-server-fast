@@ -327,6 +327,7 @@ function handleServer(_req, _res) {
 					//Call the PHP version of this script
 					
 					var fullUrl = cnf.webRoot + '/' + defaultPHPScript + url;  //path.join('/', defaultPHPScript)
+					if(verbose == true) console.log("Webroot:" + cnf.webRoot + "  Default PHP script:" + defaultPHPScript + " Url:" + url + " fullUrl:" + fullUrl);
 					callPHP(fullUrl, myres);
 					return;
 				}
@@ -485,7 +486,8 @@ function getRealIpAddress(req) {
 function callPHP(url, res) {
 	//Reads in from the PHP script url for a .jsonp response (plain text)
 	//and write it out to the requester
-
+        if(verbose == true) console.log("Redirecting to " + url);
+        
 	res.writeHead(302, {
 	  'Location': url
 	  //add other headers here...
