@@ -20,11 +20,9 @@
     "connect": "*",
     "crypto": "0.0.3",
     "date-format-lite": "*",
-    "drivelist": "*",
     "express": "*",
     "fs-extra": "*",
     "https": "*",
-    "image-type": "^2.1.0",
     "ipware": "0.0.8",
     "mkdirp": "*",
     "multer": "*",
@@ -37,7 +35,6 @@
     "path": "*",
     "read-chunk": "^2.0.0",
     "request": "*",
-    "shredfile": "^0.2.0",
     "upath": "*"
   },
   "repository" : { 
