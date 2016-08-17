@@ -47,7 +47,7 @@ var listenPort = 3277;				//default listen port. Will get from the config readPo
 var msg = {};
 var lang;
 var timeUnits;			//time units
-var verbose = false;
+var verbose = true;
 var currentDbServer = 0;
 var usage = "Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]\n\nOr:\n\nnpm config set loop-server-fast:configFile /path/to/your/loop/server/config.json\nnpm config set loop-server-fast:messagesFile /path/to/your/loop/server/messages.json\n[npm config set loop-server-fast:production true]\nnpm run start\n\n";
 var defaultPHPScript = "search-chat.php?";
