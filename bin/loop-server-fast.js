@@ -407,7 +407,7 @@ function ago(timeStr) {
   var unit = {};
   while (unit = timeUnits[i]) {
     if ((diff < unit.limit) || (!unit.limit)){
-      var diff =  Math.ceil(diff / unit.in_seconds);		//was floor
+      var diff =  Math.round(diff / unit.in_seconds);		//was floor
       var timeOut = diff + " " + (diff>1 ? unit.plural : unit.name) + " ago";
       return timeOut;
     }
