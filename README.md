@@ -103,6 +103,18 @@ You can track logs with
 pm2 logs
 ```
 
+To switch on verbose messages
+```
+npm config set loop-server-fast:verbose true
+pm2 restart loop-server-fast
+```
+
+and to switch back off again
+```
+npm config set loop-server-fast:verbose false
+pm2 restart loop-server-fast
+```
+
 If, you are on a small machine (e.g. 512MB RAM), and the install fails, try this
 
 ```
