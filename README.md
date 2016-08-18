@@ -122,3 +122,10 @@ sudo npm install loop-server-fast -g -production
 ```
 
 
+# Upgrading
+
+One convenient line, to minimise downtime (although you will have a few seconds down):
+
+```
+pm2 stop loop-server-fast; sudo npm install loop-server-fast -g; pm2 start "$(npm prefix -global)/lib/node_modules/loop-server-fast/loop-server-fast.sh"
+```
