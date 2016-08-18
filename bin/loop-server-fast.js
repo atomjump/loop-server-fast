@@ -12,9 +12,12 @@ Testing https connection:
 openssl s_client -CApath /etc/ssl/certs -connect yourdomain.com:5566
 
 
-TODO:
+Possible future project:
 Implement a mysql connection pool ala:
 https://codeforgeek.com/2015/01/nodejs-mysql-tutorial/
+
+However, this may not be necessary - we already have multi-core handled by pm2, and we are one connection per
+database, but the requests are async. 
 
 */
 
@@ -404,7 +407,7 @@ function ago(timeStr) {
   var unit = {};
   while (unit = timeUnits[i]) {
     if ((diff < unit.limit) || (!unit.limit)){
-      var diff =  Math.floor(diff / unit.in_seconds);
+      var diff =  Math.ceil(diff / unit.in_seconds);		//was floor
       var timeOut = diff + " " + (diff>1 ? unit.plural : unit.name) + " ago";
       return timeOut;
     }
@@ -443,66 +446,6 @@ function getRealIpAddress(req) {
 	return ip_info.clientIp.replace(/^[0-9.,]+$/,"");
 }
 
-/* Note - here is a fully correct version from the PHP, but I'm not sure we need it
-   to be this specific now, since we enforce a user id? Needs some checking.:
-	public function getRealIpAddr()
-	{
-		global $cnf;
-		
-		//Put all our proxy and servers in here
-		//so that we don't ever return our own ip
-	     $proxy_whitelisted = array();
-	     
-	     for($cnt = 0; $cnt< count($cnf['ips']); $cnt ++) {
-	       $proxy_whitelisted[] = $cnf['ips'][$cnt];
-	     }
-	     
-	     for($cnt = 0; $cnt< count($cnf['loadbalancer']['ips']); $cnt ++) {
-	       $proxy_whitelisted[] = $cnf['loadbalancer']['ips'][$cnt];
-	     }
-	 
-	 
-		//Check if ip from session - early out
-		if($_SESSION['user-ip']) {		
-			return $_SESSION['user-ip'];
-		}
-		
-		//Otherwise check from the various server methods
-		if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))   //to check ip is pass from proxy
-	    {
-	      $ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
-	    }
-	    elseif (!empty($_SERVER['HTTP_CLIENT_IP']))   //check ip from share internet
-	    {
-	      $ip=$_SERVER['HTTP_CLIENT_IP'];
-	    }
-	    else
-	    {
-	      $ip=$_SERVER['REMOTE_ADDR'];
-	    }
-	    $ips = explode(",", $ip);
-	    
-	    if(in_array($ips[0], $proxy_whitelisted)) {
-	       //Try the end of the array
-	        
-	       if(in_array(end($ips), $proxy_whitelisted)) {
-	          //Failed finding an ip address. NULL or a made up one?
-	          //Make up an ip starting with 192 trying to be 
-	          //fairly unique. TODO make this a genuinely
-	          //unique uuid and split off from ip address.
-	          // at the moment use a month and user agent
-	          // differentiator. 
-	          $us = md5($_SERVER['HTTP_USER_AGENT'] . date('Ym'));
-	          $ip = "192." . ord($us[0]) . '.' . ord($us[1]) . '.' . ord($us[2]);
-	          return $ip; 
-	       } else {
-	          return end($ips);
-	       }
-	    }
-	    
-	    return $ips[0];
-	}
-	*/
 
 
 
@@ -695,11 +638,6 @@ function foundLayer(params,
 
 		  cb(null, outputJSON);			//No errors
 
-			
-
-
-		  //connection.end();
-
 		
 		});	//End of query
 
@@ -745,9 +683,6 @@ function searchProcess(params, cb) {
 				var debug = false;
 
 	
-				
-				//Is this needed? date_default_timezone_set($server_timezone);
-
 				if((params.passcode) && (params.passcode != '')||((params.reading) && (params.reading != ''))) { 
 					
 					
@@ -789,9 +724,7 @@ function searchProcess(params, cb) {
 					
 					foundLayer(params, session, layer, ip, userCheck, initialRecords, outputJSON, debug, cb);
 				}
-				
-				
-
+	
 				
 			}	//End of do have an ip
 			
