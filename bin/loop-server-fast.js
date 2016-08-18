@@ -492,7 +492,7 @@ function foundLayer(params,
 		}
 	
 		if(session['logged-group-user']) {
-			userChech = userCheck + " OR int_author_id = " + session['logged-group-user'] + " OR int_whisper_to_id = " + session['logged-group-user']; 
+			userCheck = userCheck + " OR int_author_id = " + session['logged-group-user'] + " OR int_whisper_to_id = " + session['logged-group-user']; 
 	
 		}
 	
