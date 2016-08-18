@@ -127,7 +127,7 @@ if((process.argv[4]) && (process.argv[4] == '-production')){
 
 //Configurable verbose variable
 if(process.env.npm_package_config_verbose) {
-	if(verbose == 'true') {
+	if(process.env.npm_package_config_verbose == 'true') {
 		verbose = true;
 	} else {
 		verbose = false;
