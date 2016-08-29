@@ -537,7 +537,8 @@ function foundLayer(params,
 		  var actualCnt = 0;
 		  
 		  //Exit early with no results on no layer access
-		  if((session['access-layer-granted'])&&(session['access-layer-granted'] != true)) {
+		  if((session['access-layer-granted'])&&(session['access-layer-granted'] !== "true")
+		  		&&(session['access-layer-granted'] != true)) {
 		  	if((session['access-layer-granted'] == 'false') || (session['access-layer-granted'] != layer)) {
 		  		outputJSON.res = [];		//No results
 		  		cb(null, outputJSON);			//No errors
