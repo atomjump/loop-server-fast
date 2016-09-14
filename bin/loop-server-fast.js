@@ -307,7 +307,7 @@ function handleServer(_req, _res) {
 		
 		//It must include search-chat.php or it is ignored.
 		if(req.url.indexOf(defaultPHPScript) < 0) {
-			res.writeHead(200, {'content-type': 'text/plain'});  
+			res.writeHead(200, {'content-type': 'text/html'});  
 			res.end("Not available");
 			return;
 		}	
@@ -359,7 +359,7 @@ function handleServer(_req, _res) {
 				res.end();
 			})
 
-			  res.writeHead(200, {'content-type': 'text/plain'});  
+			  res.writeHead(200, {'content-type': 'text/html'});  
 	  
 	  
 			  res.end(strData, function(err) {
