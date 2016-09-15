@@ -624,6 +624,7 @@ function foundLayer(params,
 		  
 			
 					var newEntry = {
+						'id': rows[cnt].int_ssshout_id,
 						'text': rows[cnt].var_shouted_processed,
 						'lat': rows[cnt].latitude,
 						'lon': rows[cnt].longtiude,
