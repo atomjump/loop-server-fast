@@ -178,8 +178,9 @@ for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
  
 	connections[cnt].connect();
 
+	var myConnection = connections[cnt];
 	setInterval(function () {
-    	connections[cnt].query('SELECT 1');
+    	myConnection.query('SELECT 1');
 	}, 5000);		//Testing 5 secs. Every 500 seconds (500000 microseconds), ping the database to keep the connection alive.
 					//See http://stackoverflow.com/questions/20210522/nodejs-mysql-error-connection-lost-the-server-closed-the-connection
 
