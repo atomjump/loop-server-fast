@@ -329,6 +329,13 @@ function handleServer(_req, _res) {
 		
 		var cookies = parseCookies(req);
 		params.sessionId = cookies.PHPSESSID;		//This is our custom cookie. 
+		if(!params.sessionId) {
+			res.writeHead(200, {'content-type': 'text/html'});  
+			res.end("You must include a PHP Session ID");
+			console.log("Error: You must include a PHP Session ID");
+			return;
+			
+		}
 		
 		params.ip = getFakeIpAddress(params.sessionId);
 		
@@ -439,12 +446,16 @@ function getFakeIpAddress(sessionId) {
 	//a = ASCII value of sessionId's first character
 	//b = ASCII value of sessionId's second character
 	//c = ASCII value of sessionId's third character
-
-    var ip = "192." + parseInt(sessionId.charCodeAt(0)) + "." +
-    				parseInt(sessionId.charCodeAt(1)) + "." +
-    				parseInt(sessionId.charCodeAt(2));
-	return ip;
-
+    
+    if(sessionId) {
+		var ip = "192." + parseInt(sessionId.charCodeAt(0)) + "." +
+						parseInt(sessionId.charCodeAt(1)) + "." +
+						parseInt(sessionId.charCodeAt(2));
+		return ip;
+	} else {
+		//OK, so we don't have a session id - use a fixed random ip
+		return "192.168.10.10";	
+	}
 }
 
 function getRealIpAddress(req) {
