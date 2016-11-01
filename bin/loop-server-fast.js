@@ -330,8 +330,8 @@ function handleServer(_req, _res) {
 		var cookies = parseCookies(req);
 		params.sessionId = cookies.PHPSESSID;		//This is our custom cookie. 
 		if(!params.sessionId) {
-			res.writeHead(200, {'content-type': 'text/html'});  
-			res.end("You must include a PHP Session ID");
+			res.statusCode = 400;			//Error - tell the app about it
+	  		res.end();
 			console.log("Error: You must include a PHP Session ID");
 			return;
 			
@@ -354,7 +354,7 @@ function handleServer(_req, _res) {
 				if(err == 'PHP') {
 					//Call the PHP version of this script
 					
-					var fullUrl = cnf.webRoot + '/' + defaultPHPScript + url;  //path.join('/', defaultPHPScript)
+					var fullUrl = cnf.webRoot + '/' + defaultPHPScript + url;  
 					if(verbose == true) console.log("Webroot:" + cnf.webRoot + "  Default PHP script:" + defaultPHPScript + " Url:" + url + " fullUrl:" + fullUrl);
 					callPHP(fullUrl, myres);
 					return;
