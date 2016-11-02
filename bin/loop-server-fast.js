@@ -193,7 +193,7 @@ if(cnf.httpsKey) {
 			if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
 			  //Close and restart all the connections
 			  for(var ccnt = 0; ccnt< cnf.db.hosts.length; ccnt++) {
-			  		connections[cnt].end();
+			  		connections[ccnt].end();
 			  }
 			  
 			  handleDisconnect();                         // lost due to either server restart, or a
