@@ -191,6 +191,11 @@ if(cnf.httpsKey) {
 		 connections[cnt].on('error', function(err) {
 			console.log('db error: ', err);
 			if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+			  //Close and restart all the connections
+			  for(var ccnt = 0; ccnt< cnf.db.hosts.length; ccnt++) {
+			  		connections[cnt].end();
+			  }
+			  
 			  handleDisconnect();                         // lost due to either server restart, or a
 			} else {                                      // connnection idle timeout (the wait_timeout
 			  throw err;                                  // server variable configures this)
