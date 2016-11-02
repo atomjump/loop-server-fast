@@ -163,28 +163,52 @@ if(cnf.httpsKey) {
 	
  }
  
+ var connections = [];
  
  
-var connections = [];
-
-for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
-
-	connections[cnt] = mysql.createConnection({
-	  host     : cnf.db.hosts[cnt],
-	  user     : cnf.db.user,
-	  password : cnf.db.pass,
-	  database : cnf.db.name
-	});
+ function handleDisconnect() {
  
-	connections[cnt].connect();
+ 
+ 
+ 	//Reconnect to all db hosts
+	for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
 
-	var myConnection = connections[cnt];
-	setInterval(function () {
-    	myConnection.query('SELECT 1');
-	}, 500000);		//Testing 5 secs. Every 500 seconds (500000 microseconds), ping the database to keep the connection alive.
-					//See http://stackoverflow.com/questions/20210522/nodejs-mysql-error-connection-lost-the-server-closed-the-connection
+		connections[cnt] = mysql.createConnection({
+		  host     : cnf.db.hosts[cnt],
+		  user     : cnf.db.user,
+		  password : cnf.db.pass,
+		  database : cnf.db.name
+		});
+ 
+		//connections[cnt].connect();
+		connections[cnt].connect(function(err) {              // The server is either down
+			if(err) {                                     // or restarting (takes a while sometimes).
+			  console.log('error when connecting to db:', err);
+			  setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+			}                                     // to avoid a hot loop, and to allow our node script to
+		  });                                     // process asynchronous requests in the meantime.
+											  // If you're also serving http, display a 503 error.
+		 connections[cnt].on('error', function(err) {
+			console.log('db error: ', err);
+			if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+			  handleDisconnect();                         // lost due to either server restart, or a
+			} else {                                      // connnection idle timeout (the wait_timeout
+			  throw err;                                  // server variable configures this)
+			}
+		  });
 
+		/*var myConnection = connections[cnt];
+		setInterval(function () {
+			myConnection.query('SELECT 1');
+		}, 500000);		//Testing 5 secs. Every 500 seconds (500000 microseconds), ping the database to keep the connection alive.
+						//See http://stackoverflow.com/questions/20210522/nodejs-mysql-error-connection-lost-the-server-closed-the-connection
+		*/
+	}
+
+ 
 }
+ 
+handleDisconnect();
 
 function escapeRegExp(str) {
     return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
