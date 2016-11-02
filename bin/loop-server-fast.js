@@ -707,7 +707,7 @@ function searchProcess(params, cb) {
 
 
 
-		if((session['logged-user'])&&(session['logged-user'] != '')) {
+		if((session)&&(session['logged-user'])&&(session['logged-user'] != '')) {
 			//Already logged in, but check if we know the ip address
 			if((!session['user-ip'])||(session['user-ip'] == '')) {
 				//No ip. Will have to revert back to the PHP version
