@@ -227,6 +227,7 @@ if(cnf.httpsKey) {
  		for(var scaleCnt = 0; scaleCnt< cnf.db.scaleUp.length; scaleCnt++) {
  		
  			connections[scaleCnt+1] = [];
+ 			currentDbServer[scaleCnt+1] = 0;
  			dbCnf = cnf.db.scaleUp[scaleCnt];
  		
 			for(var cnt = 0; cnt< dbCnf.hosts.length; cnt++) {
