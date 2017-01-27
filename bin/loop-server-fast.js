@@ -190,8 +190,6 @@ if(cnf.httpsKey) {
  	connections[0] = {};
 	for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
 
-		console.log("User:" + cnf.db.user + " Pass:" + cnf.db.pass);
-
 		connections[0][cnt] = mysql.createConnection({
 		  host     : cnf.db.hosts[cnt],
 		  user     : cnf.db.user,
@@ -232,8 +230,6 @@ if(cnf.httpsKey) {
  			dbCnf = cnf.db.scaleUp[scaleCnt];
  		
 			for(var cnt = 0; cnt< dbCnf.hosts.length; cnt++) {
-
-				console.log("User:" + dbCnf.user + " Pass:" + dbCnf.pass);
 
 				connections[scaleCnt+1][cnt] = mysql.createConnection({
 				  host     : dbCnf.hosts[cnt],
@@ -763,6 +759,8 @@ function foundLayer(params,
 
 function checkScaleupHorizontally(layerName, params) {
 
+	console.log("Layer Name:" + layerName);
+
 	if(cnf.db.scaleUp) {
 		//Create more connections
  		for(var scaleCnt = 0; scaleCnt< cnf.db.scaleUp.length; scaleCnt++) {
@@ -770,6 +768,8 @@ function checkScaleupHorizontally(layerName, params) {
 				//OK switch over to this db connection
 				//Choose a random db connection
 				params.connection = connections[scaleCnt+1][currentDbServer];
+		
+				console.log("Connections Scaled to:" + scaleCnt);
 		
 				//Round robin the connection
 				currentDbServer[scaleCnt+1] ++;
