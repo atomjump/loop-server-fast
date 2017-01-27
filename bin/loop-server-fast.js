@@ -51,7 +51,8 @@ var msg = {};
 var lang;
 var timeUnits;			//time units
 var verbose = false;
-var currentDbServer = 0;
+var currentDbServer = [];
+currentDbServer[0] = 0;
 var usage = "Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]\n\nOr:\n\nnpm config set loop-server-fast:configFile /path/to/your/loop/server/config.json\nnpm config set loop-server-fast:messagesFile /path/to/your/loop/server/messages.json\n[npm config set loop-server-fast:production true]\nnpm run start\n\n";
 var defaultPHPScript = "search-chat.php?";
 var defaultPHPScriptLen = defaultPHPScript.length;
@@ -168,12 +169,28 @@ if(cnf.httpsKey) {
  
  function handleDisconnect() {
  
- 
+ 	//Check for a different database
+ 	/*
+ 			if((isset($db_cnf['scaleUp']))&&(isset($layer_name))) {	
+			//We are scaling up
+			for($cnt = 0; $cnt< count($db_cnf['scaleUp']); $cnt ++) {	
+				if(preg_match($db_cnf['scaleUp'][$cnt]['labelRegExp'],$layer_name, $matches) == true) {
+					//Override with this database					
+					$db_cnf = $db_cnf['scaleUp'][$cnt];
+					return;
+				}
+
+			}
+		}
+ 	*/
+ 	
+ 	
  
  	//Reconnect to all db hosts
+ 	connections[0] = {};
 	for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
 
-		connections[cnt] = mysql.createConnection({
+		connections[0][cnt] = mysql.createConnection({
 		  host     : cnf.db.hosts[cnt],
 		  user     : cnf.db.user,
 		  password : cnf.db.pass,
@@ -181,19 +198,19 @@ if(cnf.httpsKey) {
 		});
  
 		//connections[cnt].connect();
-		connections[cnt].connect(function(err) {              // The server is either down
+		connections[0][cnt].connect(function(err) {              // The server is either down
 			if(err) {                                     // or restarting (takes a while sometimes).
 			  console.log('error when connecting to db:', err);
 			  setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
 			}                                     // to avoid a hot loop, and to allow our node script to
 		  });                                     // process asynchronous requests in the meantime.
 											  // If you're also serving http, display a 503 error.
-		 connections[cnt].on('error', function(err) {
+		 connections[0][cnt].on('error', function(err) {
 			console.log('db error: ', err);
 			if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
 			  //Close and restart all the connections
 			  for(var ccnt = 0; ccnt< cnf.db.hosts.length; ccnt++) {
-			  		connections[ccnt].end();
+			  		connections[0][ccnt].end();
 			  }
 			  
 			  handleDisconnect();                         // lost due to either server restart, or a
@@ -204,6 +221,50 @@ if(cnf.httpsKey) {
 
 
 	}
+	
+	if(cnf.db.scaleUp) {
+		//Create more connections
+ 		for(var scaleCnt = 0; scaleCnt< cnf.db.scaleUp.length; scaleCnt++) {
+ 		
+ 			connections[scaleCnt+1] = {};
+ 			dbCnf = cnf.db.scaleUp[scaleCnt];
+ 		
+			for(var cnt = 0; cnt< dbCnf.hosts.length; cnt++) {
+
+				connections[scaleCnt+1][cnt] = mysql.createConnection({
+				  host     : dbCnf.hosts[cnt],
+				  user     : dbCnf.user,
+				  password : dbCnf.pass,
+				  database : dbCnf.name
+				});
+ 
+				//connections[cnt].connect();
+				connections[scaleCnt+1][cnt].connect(function(err) {              // The server is either down
+					if(err) {                                     // or restarting (takes a while sometimes).
+					  console.log('error when connecting to db:', err);
+					  setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+					}                                     // to avoid a hot loop, and to allow our node script to
+				  });                                     // process asynchronous requests in the meantime.
+													  // If you're also serving http, display a 503 error.
+				 connections[scaleCnt+1][cnt].on('error', function(err) {
+					console.log('db error: ', err);
+					if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+					  //Close and restart all the connections
+					  for(var ccnt = 0; ccnt< cnf.db.hosts.length; ccnt++) {
+							connections[scaleCnt+1][ccnt].end();
+					  }
+			  
+					  handleDisconnect();                         // lost due to either server restart, or a
+					} else {                                      // connnection idle timeout (the wait_timeout
+					  throw err;                                  // server variable configures this)
+					}
+				  });
+
+
+			}
+		}
+ 		
+ 	}
 
  
 }
@@ -364,11 +425,11 @@ function handleServer(_req, _res) {
 		params.ip = getFakeIpAddress(params.sessionId);
 		
 		//Choose a random db connection
-		params.connection = connections[currentDbServer];
+		params.connection = connections[0][currentDbServer];
 		
 		//Round robin the connection
-		currentDbServer ++;
-		if(currentDbServer >= cnf.db.hosts.length) currentDbServer = 0;
+		currentDbServer[0] ++;
+		if(currentDbServer >= cnf.db.hosts.length) currentDbServer[0] = 0;
 		
 		//Double up on this
 		var myres = res;
@@ -696,6 +757,27 @@ function foundLayer(params,
 }
 
 
+function checkScaleupHorizontally(layerName, params) {
+
+	if(cnf.db.scaleUp) {
+		//Create more connections
+ 		for(var scaleCnt = 0; scaleCnt< cnf.db.scaleUp.length; scaleCnt++) {
+			if(layerName.search(cnf.db.scaleUp[scaleCnt].labelRegExp) >= 0) {
+				//OK switch over to this db connection
+				//Choose a random db connection
+				params.connection = connections[scaleCnt+1][currentDbServer];
+		
+				//Round robin the connection
+				currentDbServer[scaleCnt+1] ++;
+				if(currentDbServer >= cnf.db.scaleUp[scaleCnt].hosts.length) currentDbServer[scaleCnt+1] = 0;
+				return;
+			}
+		}
+ 	}
+ 	
+ 	return;
+}
+
 
 
 function searchProcess(params, cb) {
@@ -736,6 +818,8 @@ function searchProcess(params, cb) {
 	
 				if((params.passcode) && (params.passcode != '')||((params.reading) && (params.reading != ''))) { 
 					
+					//See if we need to switch to a different db connection based off the layer name
+					checkScaleupHorizontally(params.passcode, params);
 					
 					var sql = "SELECT int_layer_id FROM tbl_layer WHERE passcode = '" + md5(params.passcode) + "'";
 					
