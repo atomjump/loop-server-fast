@@ -232,8 +232,6 @@ if(cnf.httpsKey) {
  		
 			for(var cnt = 0; cnt< dbCnf.hosts.length; cnt++) {
 				
-				console.log("Creating connection[" + (scaleCnt+1) + " ] cnt= " + cnt);
-
 				connections[scaleCnt+1][cnt] = mysql.createConnection({
 				  host     : dbCnf.hosts[cnt],
 				  user     : dbCnf.user,
@@ -498,7 +496,7 @@ function ago(timeStr) {
     
    
    
-   //console.log(JSON.stringify(mysqlTimeStr));
+
    var recTime = new Date(timeStr);
    var recTimeSecs = recTime.getTime();
   //Get diff in seconds 
@@ -762,22 +760,16 @@ function foundLayer(params,
 
 function checkScaleupHorizontally(layerName, params) {
 
-	console.log("Layer Name:" + layerName);
-
 	if(cnf.db.scaleUp) {
 		//Create more connections
  		for(var scaleCnt = 0; scaleCnt< cnf.db.scaleUp.length; scaleCnt++) {
 			
-			console.log("Checking against:" + cnf.db.scaleUp[scaleCnt].labelRegExp);
 			var regExp = new RegExp(cnf.db.scaleUp[scaleCnt].labelRegExp);
 			if(layerName.search(regExp) >= 0) {
 				//OK switch over to this db connection
 				//Choose a random db connection
-				console.log("db server:" + currentDbServer[scaleCnt+1]);
 				params.connection = connections[scaleCnt+1][currentDbServer[scaleCnt+1]];
-		
-				console.log("Connections Scaled to:" + scaleCnt);
-		
+
 				//Round robin the connection
 				currentDbServer[scaleCnt+1] ++;
 				if(currentDbServer[scaleCnt+1] >= cnf.db.scaleUp[scaleCnt].hosts.length) currentDbServer[scaleCnt+1] = 0;
