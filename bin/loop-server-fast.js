@@ -226,10 +226,12 @@ if(cnf.httpsKey) {
 		//Create more connections
  		for(var scaleCnt = 0; scaleCnt< cnf.db.scaleUp.length; scaleCnt++) {
  		
- 			connections[scaleCnt+1] = {};
+ 			connections[scaleCnt+1] = [];
  			dbCnf = cnf.db.scaleUp[scaleCnt];
  		
 			for(var cnt = 0; cnt< dbCnf.hosts.length; cnt++) {
+				
+				console.log("Creating connection[" + (scaleCnt+1) + " ] cnt= " + cnt);
 
 				connections[scaleCnt+1][cnt] = mysql.createConnection({
 				  host     : dbCnf.hosts[cnt],
@@ -770,6 +772,7 @@ function checkScaleupHorizontally(layerName, params) {
 			if(layerName.search(regExp) >= 0) {
 				//OK switch over to this db connection
 				//Choose a random db connection
+				console.log("db server:" + currentDbServer[scaleCnt+1]);
 				params.connection = connections[scaleCnt+1][currentDbServer[scaleCnt+1]];
 		
 				console.log("Connections Scaled to:" + scaleCnt);
