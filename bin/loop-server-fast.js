@@ -770,7 +770,7 @@ function checkScaleupHorizontally(layerName, params) {
 			if(layerName.search(regExp) >= 0) {
 				//OK switch over to this db connection
 				//Choose a random db connection
-				params.connection = connections[scaleCnt+1][currentDbServer];
+				params.connection = connections[scaleCnt+1][currentDbServer[scaleCnt+1]];
 		
 				console.log("Connections Scaled to:" + scaleCnt);
 		
