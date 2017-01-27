@@ -190,6 +190,8 @@ if(cnf.httpsKey) {
  	connections[0] = {};
 	for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
 
+		console.log("User:" + cnf.db.user + " Pass:" + cnf.db.pass);
+
 		connections[0][cnt] = mysql.createConnection({
 		  host     : cnf.db.hosts[cnt],
 		  user     : cnf.db.user,
@@ -230,6 +232,8 @@ if(cnf.httpsKey) {
  			dbCnf = cnf.db.scaleUp[scaleCnt];
  		
 			for(var cnt = 0; cnt< dbCnf.hosts.length; cnt++) {
+
+				console.log("User:" + dbCnf.user + " Pass:" + dbCnf.pass);
 
 				connections[scaleCnt+1][cnt] = mysql.createConnection({
 				  host     : dbCnf.hosts[cnt],
