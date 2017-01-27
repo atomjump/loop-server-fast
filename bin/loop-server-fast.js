@@ -427,11 +427,11 @@ function handleServer(_req, _res) {
 		params.ip = getFakeIpAddress(params.sessionId);
 		
 		//Choose a random db connection
-		params.connection = connections[0][currentDbServer];
+		params.connection = connections[0][currentDbServer[0]];
 		
 		//Round robin the connection
 		currentDbServer[0] ++;
-		if(currentDbServer >= cnf.db.hosts.length) currentDbServer[0] = 0;
+		if(currentDbServer[0] >= cnf.db.hosts.length) currentDbServer[0] = 0;
 		
 		//Double up on this
 		var myres = res;
@@ -779,7 +779,7 @@ function checkScaleupHorizontally(layerName, params) {
 		
 				//Round robin the connection
 				currentDbServer[scaleCnt+1] ++;
-				if(currentDbServer >= cnf.db.scaleUp[scaleCnt].hosts.length) currentDbServer[scaleCnt+1] = 0;
+				if(currentDbServer[scaleCnt+1] >= cnf.db.scaleUp[scaleCnt].hosts.length) currentDbServer[scaleCnt+1] = 0;
 				return;
 			}
 		}
