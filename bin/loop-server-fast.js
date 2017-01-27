@@ -766,7 +766,8 @@ function checkScaleupHorizontally(layerName, params) {
  		for(var scaleCnt = 0; scaleCnt< cnf.db.scaleUp.length; scaleCnt++) {
 			
 			console.log("Checking against:" + cnf.db.scaleUp[scaleCnt].labelRegExp);
-			if(layerName.search(cnf.db.scaleUp[scaleCnt].labelRegExp) >= 0) {
+			var regExp = new RegExp(cnf.db.scaleUp[scaleCnt].labelRegExp);
+			if(layerName.search(regExp) >= 0) {
 				//OK switch over to this db connection
 				//Choose a random db connection
 				params.connection = connections[scaleCnt+1][currentDbServer];
