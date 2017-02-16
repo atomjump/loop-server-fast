@@ -46,7 +46,8 @@ To your Loop Server's config/config.json, add the following
 
 Now run and set up the script to run after a server reboot.
 ```
-pm2 start "$(npm prefix -global)/lib/node_modules/loop-server-fast/loop-server-fast.sh"
+cd "$(npm prefix -global)/lib/node_modules/loop-server-fast/"; 
+pm2 start npm --name "loop-server-fast" -- start
 pm2 save
 pm2 startup     	#and run the command it outputs, to get autostart at boot-up.
 ```
@@ -127,5 +128,5 @@ sudo npm install loop-server-fast -g -production
 One convenient line, to minimise downtime (although you will have a few seconds down):
 
 ```
-pm2 stop loop-server-fast; sudo npm install loop-server-fast -g; pm2 start "$(npm prefix -global)/lib/node_modules/loop-server-fast/loop-server-fast.sh"
+pm2 stop loop-server-fast; sudo npm install loop-server-fast -g; cd "$(npm prefix -global)/lib/node_modules/loop-server-fast/"; pm2 start npm --name "loop-server-fast" -- start
 ```
