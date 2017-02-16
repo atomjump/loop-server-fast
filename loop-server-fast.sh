@@ -1,7 +1,7 @@
 #!/bin/bash
 _int() { 
   echo "Caught SIGINT signal!" 
-  kill -INT "$child" 2>/dev/null
+  sudo npm run stop
 }
 
 trap _int SIGINT
