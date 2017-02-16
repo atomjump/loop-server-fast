@@ -59,6 +59,17 @@ var defaultPHPScript = "search-chat.php?";
 var defaultPHPScriptLen = defaultPHPScript.length;
 
 
+process.on('SIGINT', function() {
+	//Cleanly handle a process kill
+   closeAllConnections();
+   setTimeout(function() {
+    // 300ms later the process kill it self to allow a restart
+    process.exit(0);
+  }, 300);
+});
+
+
+
 if((process.argv)&&(process.argv[2])){
   var loopServerConfig = process.argv[2];
 } else {
