@@ -60,10 +60,12 @@ var defaultPHPScriptLen = defaultPHPScript.length;
 
 
 process.on('SIGINT', function() {
-	//Cleanly handle a process kill
+   //Cleanly handle a process kill
+   console.log("Requesting a shutdown.");
    closeAllConnections();
    setTimeout(function() {
     // 300ms later the process kill it self to allow a restart
+    console.log("Clean exit.");
     process.exit(0);
   }, 300);
 });
