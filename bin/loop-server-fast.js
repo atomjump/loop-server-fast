@@ -206,10 +206,7 @@ if(cnf.httpsKey) {
 		}
  	*/
  	
- 	if(closing == true) {
- 		return;
  	
- 	}
  	
  
  	//Reconnect to all db hosts
@@ -230,9 +227,10 @@ if(cnf.httpsKey) {
 			  console.log('error when connecting to db:', err);
 			  closing = true;
 			  closeAllConnections();
-			  closing = false;
+			  
 			  
 			  if(closing == false) {
+			    closing = true;
 			  	setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
 			  }
 			 
@@ -241,21 +239,23 @@ if(cnf.httpsKey) {
 											  // If you're also serving http, display a 503 error.
 		 connections[0][cnt].on('error', function(err) {
 			console.log('db error: ', err);
-			 closing = true;
+			 
 			 closeAllConnections();
-			 closing = false;
+			 
 			
 			if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
 			  //Close and restart all the connections
 			  
 			 
 			  if(closing == false) {
+			    closing = true;
 			  	setTimeout(handleDisconnect, 2000);                         // lost due to either server restart, or a
 			  }
 			} else {                                      // connnection idle timeout (the wait_timeout
 			  //throw err;                                  // server variable configures this)
 			  //closeAllConnections();
 			  if(closing == false) {
+			    closing = true;
 			  	setTimeout(handleDisconnect, 2000);
 			  }
 			  
@@ -286,11 +286,12 @@ if(cnf.httpsKey) {
 				connections[scaleCnt+1][cnt].connect(function(err) {              // The server is either down
 					if(err) {                                     // or restarting (takes a while sometimes).
 					  console.log('error when connecting to db:', err);
-					  closing = true;
+					  
 			  		  closeAllConnections();
-			  		  closing = false;
+			  		  
 					  
 					  if(closing == false) {
+					  	closing = true;
 					  	setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
 					  }
 					}                                     // to avoid a hot loop, and to allow our node script to
@@ -307,12 +308,14 @@ if(cnf.httpsKey) {
 					  //closeAllConnections();
 			  
 			  		  if(closing == false) {
+			  		    closing = true;
 					  	setTimeout(handleDisconnect, 2000);                         // lost due to either server restart, or a
 					  }
 					} else {                                      // connnection idle timeout (the wait_timeout
 					  //throw err;                                  // server variable configures this)
 					  
 					  if(closing == false) {
+					    closing = true;
 					  	setTimeout(handleDisconnect, 2000);
 					  }
 					}
@@ -324,6 +327,11 @@ if(cnf.httpsKey) {
 			}
 		}
  		
+ 	}
+ 	
+ 	if(closing == true) {
+ 		//Have finished getting db connections
+ 		closing = false;
  	}
 
  
