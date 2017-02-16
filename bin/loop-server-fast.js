@@ -237,8 +237,8 @@ if(cnf.httpsKey) {
 			} else {                                      // connnection idle timeout (the wait_timeout
 			  //throw err;                                  // server variable configures this)
 			  closeAllConnections();
+			  setTimeout(handleDisconnect, 2000);
 			  
-			  handleDisconnect(); 
 			}
 		  });
 
@@ -282,7 +282,7 @@ if(cnf.httpsKey) {
 					} else {                                      // connnection idle timeout (the wait_timeout
 					  //throw err;                                  // server variable configures this)
 					  closeAllConnections();
-					   handleDisconnect();
+					  setTimeout(handleDisconnect, 2000);
 					}
 					     
 					
