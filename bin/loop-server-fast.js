@@ -169,18 +169,20 @@ if(cnf.httpsKey) {
  
  var connections = [];
  
- 
+ var closing = false;	//This is a global shutting down from mysql flag
  function closeAllConnections() {
- 	for(var ccnt = 0; ccnt< cnf.db.hosts.length; ccnt++) {
-		connections[0][ccnt].end();
-	}
+ 	if(closing == false) {		//Only do this once
+		for(var ccnt = 0; ccnt< cnf.db.hosts.length; ccnt++) {
+			connections[0][ccnt].end();
+		}
 	
-	if(cnf.db.scaleUp) {
-		for(var scaleCnt = 0; scaleCnt< cnf.db.scaleUp.length; scaleCnt++) {
-			for(var ccnt = 0; ccnt< cnf.db.scaleUp[scaleCnt].hosts.length; ccnt++) {
-				connections[scaleCnt+1][ccnt].end();
-			}
+		if(cnf.db.scaleUp) {
+			for(var scaleCnt = 0; scaleCnt< cnf.db.scaleUp.length; scaleCnt++) {
+				for(var ccnt = 0; ccnt< cnf.db.scaleUp[scaleCnt].hosts.length; ccnt++) {
+					connections[scaleCnt+1][ccnt].end();
+				}
 		
+			}
 		}
 	}
  
@@ -221,7 +223,9 @@ if(cnf.httpsKey) {
 		connections[0][cnt].connect(function(err) {              // The server is either down
 			if(err) {                                     // or restarting (takes a while sometimes).
 			  console.log('error when connecting to db:', err);
+			  closing = true;
 			  closeAllConnections();
+			  closing = false;
 			  
 			  setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
 			}                                     // to avoid a hot loop, and to allow our node script to
@@ -229,11 +233,16 @@ if(cnf.httpsKey) {
 											  // If you're also serving http, display a 503 error.
 		 connections[0][cnt].on('error', function(err) {
 			console.log('db error: ', err);
+			 closing = true;
+			 closeAllConnections();
+			 closing = false;
+			
 			if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
 			  //Close and restart all the connections
-			  //closeAllConnections();
 			  
-			  handleDisconnect();                         // lost due to either server restart, or a
+			 
+			  
+			  setTimeout(handleDisconnect, 2000);                         // lost due to either server restart, or a
 			} else {                                      // connnection idle timeout (the wait_timeout
 			  //throw err;                                  // server variable configures this)
 			  //closeAllConnections();
@@ -281,7 +290,7 @@ if(cnf.httpsKey) {
 					  handleDisconnect();                         // lost due to either server restart, or a
 					} else {                                      // connnection idle timeout (the wait_timeout
 					  //throw err;                                  // server variable configures this)
-					  //closeAllConnections();
+					  closeAllConnections();
 					  setTimeout(handleDisconnect, 2000);
 					}
 					     
