@@ -209,6 +209,7 @@ if(cnf.httpsKey) {
  	
  
  	//Reconnect to all db hosts
+ 	console.log("Connecting to the database.");
  	connections[0] = {};
 	for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
 
