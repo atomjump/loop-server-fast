@@ -436,7 +436,7 @@ function handleServer(_req, _res) {
 			
 		}
 		
-		if((cookies.lang) {
+		if(cookies.lang) {
 			//A language modifier exists
 			  var time = msg.msgs[cookies.lang].time;
 			  params.timeUnits = [
