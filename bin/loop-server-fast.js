@@ -224,15 +224,11 @@ if(cnf.httpsKey) {
 		//connections[cnt].connect();
 		connections[0][cnt].connect(function(err) {              // The server is either down
 			if(err) {                                     // or restarting (takes a while sometimes).
+			  //Error on trying to connect - try again in 2 seconds
 			  console.log('error when connecting to db:', err);
-			  closing = true;
-			  closeAllConnections();
 			  
+			  setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
 			  
-			  if(closing == false) {
-			    closing = true;
-			  	setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
-			  }
 			 
 			}                                     // to avoid a hot loop, and to allow our node script to
 		  });                                     // process asynchronous requests in the meantime.
@@ -286,14 +282,9 @@ if(cnf.httpsKey) {
 				connections[scaleCnt+1][cnt].connect(function(err) {              // The server is either down
 					if(err) {                                     // or restarting (takes a while sometimes).
 					  console.log('error when connecting to db:', err);
+				
+					  setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
 					  
-			  		  closeAllConnections();
-			  		  
-					  
-					  if(closing == false) {
-					  	closing = true;
-					  	setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
-					  }
 					}                                     // to avoid a hot loop, and to allow our node script to
 				  });                                     // process asynchronous requests in the meantime.
 													  // If you're also serving http, display a 503 error.
