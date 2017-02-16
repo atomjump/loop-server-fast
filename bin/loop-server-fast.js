@@ -50,6 +50,7 @@ var listenPort = 3277;				//default listen port. Will get from the config readPo
 var msg = {};
 var lang;
 var timeUnits;			//time units
+var agoDefault;			//Usually in English set to 'ago' - the word displayed after the time units
 var verbose = false;
 var currentDbServer = [];
 currentDbServer[0] = 0;
@@ -106,6 +107,8 @@ if(((process.argv)&&(process.argv[3]))||(process.env.npm_package_config_messages
     { name: time.month, plural: time.months, limit: 31556926, in_seconds: 2629743 },
     { name: time.year, plural: time.years, limit: null, in_seconds: 31556926 }
   ];
+  
+  agoDefault = time.ago;
   
   
 } else {
@@ -448,6 +451,8 @@ function handleServer(_req, _res) {
 				{ name: time.month, plural: time.months, limit: 31556926, in_seconds: 2629743 },
 				{ name: time.year, plural: time.years, limit: null, in_seconds: 31556926 }
 			  ];
+			  
+			  params.ago = time.ago;
 		
 		}
 		
@@ -520,7 +525,7 @@ function parseCookies (request) {
 }
 
 
-function ago(timeStr, thisTimeUnits) {
+function ago(timeStr, thisTimeUnits, agoWord) {
     
    
    
@@ -538,7 +543,7 @@ function ago(timeStr, thisTimeUnits) {
   while (unit = thisTimeUnits[i]) {
     if ((diff < unit.limit) || (!unit.limit)){
       var diff =  Math.round(diff / unit.in_seconds);		//was floor
-      var timeOut = diff + " " + (diff>1 ? unit.plural : unit.name) + " ago";
+      var timeOut = diff + " " + (diff>1 ? unit.plural : unit.name) + " " + agoWord;
       return timeOut;
     }
     i++;
@@ -682,9 +687,11 @@ function foundLayer(params,
 		  
 		  //Time unit override
 		  var thisTimeUnits = timeUnits;	//The default language
+		  var thisAgo = agoDefault;
 		  if(params.timeUnits) {
 		  	 //An override, which was set by the cookie 'lang'
 			 thisTimeUnits = params.timeUnits;
+		  	 thisAgo = params.ago; 
 		  }
 		  
 		  
@@ -771,7 +778,7 @@ function foundLayer(params,
 						'lat': rows[cnt].latitude,
 						'lon': rows[cnt].longtiude,
 						'dist': rows[cnt].dist,
-						'ago': ago(rows[cnt].date_when_shouted, thisTimeUnits),
+						'ago': ago(rows[cnt].date_when_shouted, thisTimeUnits, thisAgo),
 						'whisper': whisper
 					
 					}
