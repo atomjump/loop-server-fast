@@ -167,6 +167,23 @@ if(cnf.httpsKey) {
  var connections = [];
  
  
+ function closeAllConnections() {
+ 	for(var ccnt = 0; ccnt< cnf.db.hosts.length; ccnt++) {
+		connections[0][ccnt].end();
+	}
+	
+	if(cnf.db.scaleUp) {
+		for(var scaleCnt = 0; scaleCnt< cnf.db.scaleUp.length; scaleCnt++) {
+			for(var ccnt = 0; ccnt< cnf.db.scaleUp[scaleCnt].hosts.length; ccnt++) {
+				connections[scaleCnt+1][ccnt].end();
+			}
+		
+		}
+	}
+ 
+ }
+ 
+ 
  function handleDisconnect() {
  
  	//Check for a different database
@@ -209,9 +226,7 @@ if(cnf.httpsKey) {
 			console.log('db error: ', err);
 			if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
 			  //Close and restart all the connections
-			  for(var ccnt = 0; ccnt< cnf.db.hosts.length; ccnt++) {
-			  		connections[0][ccnt].end();
-			  }
+			  closeAllConnections();
 			  
 			  handleDisconnect();                         // lost due to either server restart, or a
 			} else {                                      // connnection idle timeout (the wait_timeout
@@ -251,9 +266,7 @@ if(cnf.httpsKey) {
 					console.log('db error: ', err);
 					if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
 					  //Close and restart all the connections
-					  for(var ccnt = 0; ccnt< cnf.db.hosts.length; ccnt++) {
-							connections[scaleCnt+1][ccnt].end();
-					  }
+					  closeAllConnections();
 			  
 					  handleDisconnect();                         // lost due to either server restart, or a
 					} else {                                      // connnection idle timeout (the wait_timeout
