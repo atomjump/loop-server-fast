@@ -231,12 +231,12 @@ if(cnf.httpsKey) {
 			console.log('db error: ', err);
 			if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
 			  //Close and restart all the connections
-			  closeAllConnections();
+			  //closeAllConnections();
 			  
 			  handleDisconnect();                         // lost due to either server restart, or a
 			} else {                                      // connnection idle timeout (the wait_timeout
 			  //throw err;                                  // server variable configures this)
-			  closeAllConnections();
+			  //closeAllConnections();
 			  setTimeout(handleDisconnect, 2000);
 			  
 			}
@@ -276,12 +276,12 @@ if(cnf.httpsKey) {
 					console.log('db error: ', err);
 					if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
 					  //Close and restart all the connections
-					  closeAllConnections();
+					  //closeAllConnections();
 			  
 					  handleDisconnect();                         // lost due to either server restart, or a
 					} else {                                      // connnection idle timeout (the wait_timeout
 					  //throw err;                                  // server variable configures this)
-					  closeAllConnections();
+					  //closeAllConnections();
 					  setTimeout(handleDisconnect, 2000);
 					}
 					     
