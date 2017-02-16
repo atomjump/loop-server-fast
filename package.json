@@ -14,7 +14,6 @@
   "preferGlobal": "true",
   "scripts": {
   	 "start": "node bin/loop-server-fast.js"
-  	 "stop": "kill -SIGINT bin/loop-server-fast.js"
   },
   "dependencies": {
     "async": "~1.4.2",
