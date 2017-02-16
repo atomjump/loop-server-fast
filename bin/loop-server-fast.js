@@ -295,9 +295,9 @@ if(cnf.httpsKey) {
 													  // If you're also serving http, display a 503 error.
 				 connections[scaleCnt+1][cnt].on('error', function(err) {
 					console.log('db error: ', err);
-					closing = true;
+					
 			  		closeAllConnections();
-			  		closing = false;
+			  		
 					
 					if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
 					  //Close and restart all the connections
