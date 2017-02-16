@@ -173,13 +173,17 @@ if(cnf.httpsKey) {
  function closeAllConnections() {
  	if(closing == false) {		//Only do this once
 		for(var ccnt = 0; ccnt< cnf.db.hosts.length; ccnt++) {
-			connections[0][ccnt].end();
+			if(connections[0][ccnt]) {
+				connections[0][ccnt].end();
+			}
 		}
 	
 		if(cnf.db.scaleUp) {
 			for(var scaleCnt = 0; scaleCnt< cnf.db.scaleUp.length; scaleCnt++) {
 				for(var ccnt = 0; ccnt< cnf.db.scaleUp[scaleCnt].hosts.length; ccnt++) {
-					connections[scaleCnt+1][ccnt].end();
+					if(connections[scaleCnt+1][ccnt]) {
+						connections[scaleCnt+1][ccnt].end();
+					}
 				}
 		
 			}
@@ -226,7 +230,7 @@ if(cnf.httpsKey) {
 			if(err) {                                     // or restarting (takes a while sometimes).
 			  //Error on trying to connect - try again in 2 seconds
 			  console.log('error when connecting to db:', err);
-			  
+			  closeAllConnections();
 			  setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
 			  
 			 
@@ -282,7 +286,8 @@ if(cnf.httpsKey) {
 				connections[scaleCnt+1][cnt].connect(function(err) {              // The server is either down
 					if(err) {                                     // or restarting (takes a while sometimes).
 					  console.log('error when connecting to db:', err);
-				
+					  closeAllConnections();
+					  
 					  setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
 					  
 					}                                     // to avoid a hot loop, and to allow our node script to
