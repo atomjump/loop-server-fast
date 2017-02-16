@@ -423,6 +423,21 @@ function handleServer(_req, _res) {
 			
 		}
 		
+		if((cookies.lang) {
+			//A language modifier exists
+			  var time = msg.msgs[cookies.lang].time;
+			  params.timeUnits = [
+				{ name: time.second, plural: time.seconds, limit: 60, in_seconds: 1 },
+				{ name: time.minute, plural: time.minutes, limit: 3600, in_seconds: 60 },
+				{ name: time.hour, plural: time.hours, limit: 86400, in_seconds: 3600  },
+				{ name: time.day, plural: time.days, limit: 604800, in_seconds: 86400 },
+				{ name: time.week, plural: time.weeks, limit: 2629743, in_seconds: 604800  },
+				{ name: time.month, plural: time.months, limit: 31556926, in_seconds: 2629743 },
+				{ name: time.year, plural: time.years, limit: null, in_seconds: 31556926 }
+			  ];
+		
+		}
+		
 		params.ip = getFakeIpAddress(params.sessionId);
 		
 		//Choose a random db connection
@@ -492,7 +507,7 @@ function parseCookies (request) {
 }
 
 
-function ago(timeStr) {
+function ago(timeStr, thisTimeUnits) {
     
    
    
@@ -506,7 +521,8 @@ function ago(timeStr) {
   
   var i = 0;
   var unit = {};
-  while (unit = timeUnits[i]) {
+  
+  while (unit = thisTimeUnits[i]) {
     if ((diff < unit.limit) || (!unit.limit)){
       var diff =  Math.round(diff / unit.in_seconds);		//was floor
       var timeOut = diff + " " + (diff>1 ? unit.plural : unit.name) + " ago";
@@ -651,6 +667,14 @@ function foundLayer(params,
 		  	}
 		  }
 		  
+		  //Time unit override
+		  var thisTimeUnits = timeUnits;	//The default language
+		  if(params.timeUnits) {
+		  	 //An override, which was set by the cookie 'lang'
+			 thisTimeUnits = params.timeUnits;
+		  }
+		  
+		  
 		  for(var cnt = 0; cnt< rows.length; cnt++) {
 		  
 			  var whisper = true;		//default
@@ -734,7 +758,7 @@ function foundLayer(params,
 						'lat': rows[cnt].latitude,
 						'lon': rows[cnt].longtiude,
 						'dist': rows[cnt].dist,
-						'ago': ago(rows[cnt].date_when_shouted),
+						'ago': ago(rows[cnt].date_when_shouted, thisTimeUnits),
 						'whisper': whisper
 					
 					}
