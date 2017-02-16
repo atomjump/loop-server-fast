@@ -275,7 +275,9 @@ if(cnf.httpsKey) {
 				connections[scaleCnt+1][cnt].connect(function(err) {              // The server is either down
 					if(err) {                                     // or restarting (takes a while sometimes).
 					  console.log('error when connecting to db:', err);
-					  closeAllConnections();
+					  closing = true;
+			  		  closeAllConnections();
+			  		  closing = false;
 					  
 					  setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
 					}                                     // to avoid a hot loop, and to allow our node script to
@@ -283,14 +285,18 @@ if(cnf.httpsKey) {
 													  // If you're also serving http, display a 503 error.
 				 connections[scaleCnt+1][cnt].on('error', function(err) {
 					console.log('db error: ', err);
+					closing = true;
+			  		closeAllConnections();
+			  		closing = false;
+					
 					if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
 					  //Close and restart all the connections
 					  //closeAllConnections();
 			  
-					  handleDisconnect();                         // lost due to either server restart, or a
+					  setTimeout(handleDisconnect, 2000);                         // lost due to either server restart, or a
 					} else {                                      // connnection idle timeout (the wait_timeout
 					  //throw err;                                  // server variable configures this)
-					  closeAllConnections();
+					  
 					  setTimeout(handleDisconnect, 2000);
 					}
 					     
@@ -346,6 +352,13 @@ function readSession(params, cb)
         var keyValues = {};
         
         if(verbose == true) console.log("SessionID" + cleanData(params.sessionId));
+        
+        if(!params.connection) {
+        	//No connection
+        	cb(null);
+        	return;
+        
+        }
         
         params.connection.query("SELECT * FROM php_session WHERE session_id='" + cleanData(params.sessionId) + "'", function(err, rows, fields) {
         	
@@ -672,7 +685,12 @@ function foundLayer(params,
 	
 		var sql = "SELECT * FROM tbl_ssshout WHERE int_layer_id = " + layer + " AND enm_active = 'true' AND (var_whisper_to = '' OR ISNULL(var_whisper_to) OR var_whisper_to ='" + ip + "' OR var_ip = '" + ip + "' " + userCheck + ") ORDER BY date_when_shouted DESC LIMIT " + initialRecords;
 		if(verbose == true) console.log("Query: " + sql);
-	
+		if(!params.connection) {		//check the connection is still valid
+			//No connection
+			cb(err, null);
+		  	return;
+		}
+		
 		params.connection.query(sql, function(err, rows, fields) {
 
 
@@ -890,26 +908,28 @@ function searchProcess(params, cb) {
 					
 					var sql = "SELECT int_layer_id FROM tbl_layer WHERE passcode = '" + md5(params.passcode) + "'";
 					
-					params.connection.query(sql, function(err, rows, fields) {
+					if(params.connection) {		//check the connection is still valid
+						params.connection.query(sql, function(err, rows, fields) {
 					
-						if(err) {
-							console.log("Database error: " + err);
-							return;
-						} else {
-							if((rows)&&(rows[0])) {
-								layer = rows[0].int_layer_id;
-								
-								foundLayer(params, session, layer, ip, userCheck, initialRecords, outputJSON, debug, cb);
-							} else {
-								console.log("No layer " + md5(params.passcode) + " - likely new. Going to PHP");
-								cb("PHP", null);
+							if(err) {
+								console.log("Database error: " + err);
 								return;
-								//Unknown or new layer - head back to PHP
+							} else {
+								if((rows)&&(rows[0])) {
+									layer = rows[0].int_layer_id;
+								
+									foundLayer(params, session, layer, ip, userCheck, initialRecords, outputJSON, debug, cb);
+								} else {
+									console.log("No layer " + md5(params.passcode) + " - likely new. Going to PHP");
+									cb("PHP", null);
+									return;
+									//Unknown or new layer - head back to PHP
 								
 							
+								}
 							}
-						}
-					});
+						});
+					}
 					
 					
 					
