@@ -503,7 +503,9 @@ function handleServer(_req, _res) {
 		if(verbose == true) console.log("Query params = " + JSON.stringify(params));
 		
 		var cookies = parseCookies(req);
-		params.sessionId = cookies.PHPSESSID;		//This is our custom cookie. 
+		if(!params.sessionId) {				//Only if not passed in on the command line
+			params.sessionId = cookies.PHPSESSID;		//This is our custom cookie. 
+		}
 		if(!params.sessionId) {
 			res.statusCode = 400;			//Error - tell the app about it
 	  		res.end();
