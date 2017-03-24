@@ -33,12 +33,12 @@ To your Loop Server's config/config.json, add the following
 ```javascript
 {
    "staging": {
-	  ...
-	  "readPort" : 3277,								[can be a different port]
-	  "readURL" : "http://yoururl.com:3277",			[for wider compatiblity you should use a standard port URL that points at this port. See 'Ports' section below]					
-      "httpsKey" : "/path/to/your/https.key",			[optional, for https only]
-      "httpsCert": "/path/to/your/https.crt",			[optional, for https only]
-	  ...	  
+		...
+		"readPort" : 3277,								[can be a different port]
+		"readURL" : "http://yoururl.com:3277",			[for wider compatiblity you could use a proxy. See 'Ports' section below]					
+		"httpsKey" : "/path/to/your/https.key",			[optional, for https only]
+		"httpsCert": "/path/to/your/https.crt",			[optional, for https only]
+		...	  
 	}
 }
 ```
@@ -76,12 +76,12 @@ Then, to your Loop Server's config/config.json, add the following
 ```javascript
 {
    "production": {
-	  ...
-	  "readPort" : 3277								[can be a different port]
-	  "readURL" : "http://yoururl.com:3277",								[for wider compatiblity you should use a standard port URL that points at this port. See 'Ports' section below]
-      "httpsKey" : "/path/to/your/https.key",			[optional, for https only]
-      "httpsCert": "/path/to/your/https.crt",			[optional, for https only]
-	  ...	  
+		...
+		"readPort" : 3277								[can be a different port]
+		"readURL" : "http://yoururl.com:3277",								[for wider compatiblity you could use a proxy. See 'Ports' section below]
+		"httpsKey" : "/path/to/your/https.key",			[optional, for https only]
+		"httpsCert": "/path/to/your/https.crt",			[optional, for https only]
+		...	  
 	}
 }
 ```
@@ -100,43 +100,26 @@ pm2 restart loop-server-fast
 
 # Ports
 
-If you use a non-standard port number in a URL e.g. 3277, some machines behind proxy servers, particularly corporates, or some public PCs may filter the URL out when trying to read from it. The best practice here is to use the standard port 80 for http and 443 for https. Alternatively, if this port is not available on the machine you are using (for example, typically Apache would be using both already for the Loop Server), you can also either use an .htaccess redirect in the Apache settings, or a load balancer address rewiring in a load balancer from, say, a subdomain.
+If you use a non-standard port number in a URL e.g. 3277, some machines behind proxy servers, particularly corporates, or some public PCs may filter the URL out when trying to read from it. One approach here, at a slight loss of speed, is to use the standard port 80 for http and 443 for https, and ProxyPass in Apache: http://stackoverflow.com/questions/9831594/apache-and-node-js-on-the-same-server
 
-An .htaccess redirect might look something like this:
-```
-RewriteRule ^loop-server-fast$ http://mycompany.com:3277 [L,PT]
-```
-
-
-A subdomain switcher within haproxy load balancer might do this:
-```
-INPUT:        https://loop-server-fast.mycompany.com    [note: uses standard port 443]
-CONVERT TO:   https://mycompany.com:3277
-```
-
-with a command like this:
+"
+With the ProxyPass directive in the Apache httpd.conf you can pipe all requests on a particular URL to the Node.JS application.
 
 ```
-frontend https-in
-	#Standard https in
-    bind *:443 
-	option tcplog
-	mode tcp    
-
-    tcp-request inspect-delay 5s
-  	tcp-request content accept               if { req_ssl_hello_type 1 }
-    #Search for the subdomain to redirect
-    use_backend loop-server-fast if { req_ssl_sni -i loop-server-fast.mycompany.com }
-
-    default_backend loop-server
-    
-backend loop-server-fast
-    mode tcp
-    balance leastconn
-	option ssl-hello-chk   
-	#Redirect to the precise server ip and the loop-server-fast's port (3277) 
-	server node-loop-server-fast 12.34.56.23:3277 check    
+ProxyPass /node http://yourcompany.com:3277/
 ```
+Also, make sure the following lines are NOT commented out so you get the right proxy and submodule to reroute http requests:
+
+```
+LoadModule proxy_module modules/mod_proxy.so
+LoadModule proxy_http_module modules/mod_proxy_http.so
+```
+
+Which would allow your readURL to be e.g.
+```
+http://yourcompany.com/node
+```
+"
 
 
 # Troubleshooting
