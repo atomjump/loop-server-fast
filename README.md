@@ -78,7 +78,7 @@ Then, to your Loop Server's config/config.json, add the following
    "production": {
 		...
 		"readPort" : 3277								[can be a different port]
-		"readURL" : "http://yoururl.com:3277",								[for wider compatiblity you could use a proxy. See 'Ports' section below]
+		"readURL" : "http://yoururl.com:3277",			[for wider compatiblity you could use a proxy. See 'Ports' section below]
 		"httpsKey" : "/path/to/your/https.key",			[optional, for https only]
 		"httpsCert": "/path/to/your/https.crt",			[optional, for https only]
 		...	  
