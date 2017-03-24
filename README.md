@@ -114,12 +114,13 @@ Also, make sure the following lines are NOT commented out so you get the right p
 LoadModule proxy_module modules/mod_proxy.so
 LoadModule proxy_http_module modules/mod_proxy_http.so
 ```
+"
 
 Which would allow your readURL to be e.g.
 ```
 http://yourcompany.com/node
 ```
-"
+
 
 
 # Troubleshooting
