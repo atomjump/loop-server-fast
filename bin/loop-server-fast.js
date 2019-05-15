@@ -231,11 +231,21 @@ if(cnf.httpsKey) {
  	connections[0] = {};
 	for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
 
+		if(cnf.db.ssl && cnf.db.ssl.use === true) {
+			var ssl =  {
+    			ca : fs.readFileSync(cnf.db.ssl.capath)
+  			};
+		} else {
+			var ssl = null;
+		}
+
 		connections[0][cnt] = mysql.createConnection({
 		  host     : cnf.db.hosts[cnt],
 		  user     : cnf.db.user,
 		  password : cnf.db.pass,
-		  database : cnf.db.name
+		  database : cnf.db.name,
+		  port     : cnf.db.port,
+		  ssl      : ssl
 		});
  
 		//connections[cnt].connect();

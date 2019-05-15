@@ -7,13 +7,13 @@
     "loop-server-fast": "bin/loop-server-fast.js"
   },
   "config": {
-  	 "configFile": "",
-  	 "messagesFile": "",
-  	 "production": false  
+    "configFile": "",
+    "messagesFile": "",
+    "production": false
   },
   "preferGlobal": "true",
   "scripts": {
-  	 "start": "node bin/loop-server-fast.js"
+    "start": "node bin/loop-server-fast.js"
   },
   "dependencies": {
     "async": "~1.4.2",
@@ -28,7 +28,7 @@
     "multer": "*",
     "multiparty": "*",
     "mv": "*",
-    "mysql": "~2.8.0",
+    "mysql": "^2.8.0",
     "needle": "*",
     "node-mv": "*",
     "node-uuid": "*",
@@ -37,9 +37,9 @@
     "request": "*",
     "upath": "*"
   },
-  "repository" : { 
-     "type" : "git",
-     "url" : "https://github.com/atomjump/loop-server-fast"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atomjump/loop-server-fast"
   },
   "license": "MIT",
   "main": "bin/loop-server-fast.js",
