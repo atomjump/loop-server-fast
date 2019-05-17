@@ -299,13 +299,24 @@ if(cnf.httpsKey) {
  			currentDbServer[scaleCnt+1] = 0;
  			dbCnf = cnf.db.scaleUp[scaleCnt];
  		
+	 		if(dbCnf.ssl && dbCnf.ssl.use === true) {
+				var ssl =  {
+					ca : fs.readFileSync(dbCnf.ssl.capath)
+	  			};
+			} else {
+				var ssl = null;
+			}
+ 		
+ 		
 			for(var cnt = 0; cnt< dbCnf.hosts.length; cnt++) {
 				
 				connections[scaleCnt+1][cnt] = mysql.createConnection({
 				  host     : dbCnf.hosts[cnt],
 				  user     : dbCnf.user,
 				  password : dbCnf.pass,
-				  database : dbCnf.name
+				  database : dbCnf.name,
+		  		  port     : cnf.db.port,
+		  		  ssl      : ssl
 				});
  
 				//connections[cnt].connect();
