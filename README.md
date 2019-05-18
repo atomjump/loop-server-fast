@@ -2,7 +2,7 @@
 
 # loop-server-fast
 
-A faster NodeJS reader plugin to complement the AtomJump Loop Server (see http://atomjump.com).
+A faster NodeJS reader plugin to complement the AtomJump Loop Server (see http://atomjump.org).
 This speeds up the core of the AtomJump Loop Server PHP scripts, to allow for 
 a large increase in the number of simultaneous users, with the same hardware.
 
@@ -23,8 +23,8 @@ Follow the instructions to set up the Loop Server as a PHP script.
 Then to install the daemon:
 
 ```
-sudo npm install pm2@latest -g
-sudo npm install loop-server-fast -g
+npm install pm2@latest -g
+npm install loop-server-fast -g
 npm config set loop-server-fast:configFile /path/to/your/loop-server/config/config.json
 npm config set loop-server-fast:messagesFile /path/to/your/loop-server/config/messages.json
 ```
@@ -145,7 +145,7 @@ pm2 restart loop-server-fast
 If, you are on a small machine (e.g. 512MB RAM), and the install fails, try this
 
 ```
-sudo npm install loop-server-fast -g -production 
+npm install loop-server-fast -g -production 
 ```
 
 
@@ -154,5 +154,5 @@ sudo npm install loop-server-fast -g -production
 One convenient line, to minimise downtime (although you will have a few seconds down):
 
 ```
-pm2 delete loop-server-fast; sudo npm install loop-server-fast -g; cd "$(npm prefix -global)/lib/node_modules/loop-server-fast/"; pm2 start npm --name "loop-server-fast" -- start; cd ~
+pm2 delete loop-server-fast; npm install loop-server-fast -g; cd "$(npm prefix -global)/lib/node_modules/loop-server-fast/"; pm2 start npm --name "loop-server-fast" -- start; cd ~
 ```
