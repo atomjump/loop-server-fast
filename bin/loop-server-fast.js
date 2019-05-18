@@ -315,7 +315,7 @@ if(cnf.httpsKey) {
 				  user     : dbCnf.user,
 				  password : dbCnf.pass,
 				  database : dbCnf.name,
-		  		  port     : cnf.db.port,
+		  		  port     : dbCnf.port,
 		  		  ssl      : ssl
 				});
  
