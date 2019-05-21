@@ -931,6 +931,9 @@ function checkScaleupHorizontally(layerName, params) {
 function searchProcess(params, cb) {
 
 	//Get the session data
+	checkScaleupHorizontally(params.passcode, params);		//This should be before the 'readSession' because the session comes from this horiontal database also.
+	
+	
 	readSession(params, function(session) {			//eg. 'sgo3vosp1ej150sln9cvdslqm0'
 		if(verbose == true) console.log("Finished getting session data. Logged user:" + session['logged-user']);
 
@@ -967,7 +970,7 @@ function searchProcess(params, cb) {
 				if((params.passcode) && (params.passcode != '')||((params.reading) && (params.reading != ''))) { 
 					
 					//See if we need to switch to a different db connection based off the layer name
-					checkScaleupHorizontally(params.passcode, params);
+					//OLD: checkScaleupHorizontally(params.passcode, params);
 					
 					var sql = "SELECT int_layer_id FROM tbl_layer WHERE passcode = '" + md5(params.passcode) + "'";
 					
