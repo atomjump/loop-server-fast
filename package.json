@@ -2,7 +2,7 @@
   "author": "AtomJump Foundation",
   "name": "loop-server-fast",
   "description": "A faster NodeJS reader to complement the AtomJump Loop Server.",
-  "version": "0.5.16",
+  "version": "0.5.17",
   "bin": {
     "loop-server-fast": "bin/loop-server-fast.js"
   },

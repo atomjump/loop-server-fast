@@ -780,9 +780,25 @@ function foundLayer(params,
 		  if((session['access-layer-granted'])&&(session['access-layer-granted'] !== "true")
 		  		&&(session['access-layer-granted'] != true)) {
 		  	if((session['access-layer-granted'] == 'false') || (session['access-layer-granted'] != layer)) {
-		  		outputJSON.res = [];		//No results
-		  		cb(null, outputJSON);			//No errors
-		  		return;
+		  	
+		  		//See if we are in the array of layers, ignore this
+		  		if((session['access-layers-granted'])&&(isArray(session['access-layers-granted']))) {
+		  			//Check if the layer is in, if not, then exit
+		  			var granted = session['access-layers-granted'];
+		  			if(granted.includes(layer)) {
+		  				//No action needed		  			
+		  			} else {
+		  				outputJSON.res = [];		//No results
+		  				cb(null, outputJSON);			//No errors
+		  				return;
+		  			}
+		  			
+		  		} else {
+		  	
+		  			outputJSON.res = [];		//No results
+		  			cb(null, outputJSON);			//No errors
+		  			return;
+		  		}
 		  	}
 		  }
 		  
