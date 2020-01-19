@@ -785,9 +785,12 @@ function foundLayer(params,
 		  		if((session['access-layers-granted'])&&(Array.isArray(session['access-layers-granted']))) {
 		  			//Check if the layer is in, if not, then exit
 		  			var granted = session['access-layers-granted'];
+		  			if(verbose == true) console.log(granted);			//TESTING
+		  			if(verbose == true) console.log("Layer ID:" + layer);		//TESTING
 		  			if(granted.includes(layer)) {
 		  				//No action needed		  			
 		  			} else {
+		  				
 		  				outputJSON.res = [];		//No results
 		  				cb(null, outputJSON);			//No errors
 		  				return;
