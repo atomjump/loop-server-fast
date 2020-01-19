@@ -782,7 +782,7 @@ function foundLayer(params,
 		  	if((session['access-layer-granted'] == 'false') || (session['access-layer-granted'] != layer)) {
 		  	
 		  		//See if we are in the array of layers, ignore this
-		  		if((session['access-layers-granted'])&&(isArray(session['access-layers-granted']))) {
+		  		if((session['access-layers-granted'])&&(Array.isArray(session['access-layers-granted']))) {
 		  			//Check if the layer is in, if not, then exit
 		  			var granted = session['access-layers-granted'];
 		  			if(granted.includes(layer)) {
