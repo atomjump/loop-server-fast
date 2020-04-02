@@ -477,6 +477,30 @@ function httpHttpsCreateServer(options) {
 }
 
 
+function determineSubdomain(req) {
+
+	//Handle any subdomains in our 
+	if(verbose == true) console.log("Requesting: " + req.headers.host);
+	
+	//req.headers.host = eg. "outerfast.atomjump.com"
+	
+	//"readURL" : "https://[subdomain]fast.atomjump.com",
+	var myReadURL = cnf.readURL.replace("https://", "");
+	myReadURL = myReadURL.replace("http://","");
+	
+	//Now myReadURL = e.g. "[subdomain]fast.atomjump.com"
+	//req.headers.host = eg. "outerfast.atomjump.com"
+	//We want to find "outer".
+	var noSubReadURL = myReadURL.replace("[subdomain]","");  //becomes e.g. fast.atomjump.com	
+	
+	var subdomain = req.headers.host.replace(noSubReadURL,"");	//Strip off the non-subdomain url. If we are at the same host e.g. atomjump.com, then the subdomain will
+	//be a blank string.
+	
+	return subdomain;
+
+
+}
+
 
 
 
@@ -485,6 +509,8 @@ function handleServer(_req, _res) {
 	var req = _req;
 	var res = _res;
 	var body = [];
+	
+	var subdomain = determineSubdomain();
 	
 	//Start ordinary error handling
 	req.on('error', function(err) {
@@ -569,7 +595,15 @@ function handleServer(_req, _res) {
 				if(err == 'PHP') {
 					//Call the PHP version of this script
 					
-					var fullUrl = cnf.webRoot + '/' + defaultPHPScript + url;  
+					//Replace any 'fast' subdomains for the PHP request
+					if(subdomain) {
+						var replaceWith = subdomain + ".";
+					} else {
+						var replaceWith = "";
+					}
+					var webRoot = cnf.webRoot.replace("[subdomain]", replaceWith);	//strip out any subdomain codes from the url
+					
+					var fullUrl = webRoot + '/' + defaultPHPScript + url;  
 					if(verbose == true) console.log("Webroot:" + cnf.webRoot + "  Default PHP script:" + defaultPHPScript + " Url:" + url + " fullUrl:" + fullUrl);
 					callPHP(fullUrl, myres);
 					return;
@@ -970,8 +1004,6 @@ function searchProcess(params, cb) {
 				if((params.passcode) && (params.passcode != '')||((params.reading) && (params.reading != ''))) { 
 					
 					//See if we need to switch to a different db connection based off the layer name
-					//OLD: checkScaleupHorizontally(params.passcode, params);
-					
 					var sql = "SELECT int_layer_id FROM tbl_layer WHERE passcode = '" + md5(params.passcode) + "'";
 					
 					if(params.connection) {		//check the connection is still valid
