@@ -496,6 +496,8 @@ function determineSubdomain(req) {
 	var subdomain = req.headers.host.replace(noSubReadURL,"");	//Strip off the non-subdomain url. If we are at the same host e.g. atomjump.com, then the subdomain will
 	//be a blank string.
 	
+	if(verbose == true) console.log("Subdomain: " + subdomain);
+	
 	return subdomain;
 
 
