@@ -479,27 +479,31 @@ function httpHttpsCreateServer(options) {
 
 function determineSubdomain(req) {
 
-	//Handle any subdomains in our 
-	if(verbose == true) console.log("Requesting: " + req.headers.host);
+	if(req) {
+		//Handle any subdomains in our 
+		if(verbose == true) console.log("Requesting: " + req.headers.host);
 	
-	//req.headers.host = eg. "outerfast.atomjump.com"
+		//req.headers.host = eg. "outerfast.atomjump.com"
 	
-	//"readURL" : "https://[subdomain]fast.atomjump.com",
-	var myReadURL = cnf.readURL.replace("https://", "");
-	myReadURL = myReadURL.replace("http://","");
+		//"readURL" : "https://[subdomain]fast.atomjump.com",
+		var myReadURL = cnf.readURL.replace("https://", "");
+		myReadURL = myReadURL.replace("http://","");
 	
-	//Now myReadURL = e.g. "[subdomain]fast.atomjump.com"
-	//req.headers.host = eg. "outerfast.atomjump.com"
-	//We want to find "outer".
-	var noSubReadURL = myReadURL.replace("[subdomain]","");  //becomes e.g. fast.atomjump.com	
+		//Now myReadURL = e.g. "[subdomain]fast.atomjump.com"
+		//req.headers.host = eg. "outerfast.atomjump.com"
+		//We want to find "outer".
+		var noSubReadURL = myReadURL.replace("[subdomain]","");  //becomes e.g. fast.atomjump.com	
 	
-	var subdomain = req.headers.host.replace(noSubReadURL,"");	//Strip off the non-subdomain url. If we are at the same host e.g. atomjump.com, then the subdomain will
-	//be a blank string.
+		var subdomain = req.headers.host.replace(noSubReadURL,"");	//Strip off the non-subdomain url. If we are at the same host e.g. atomjump.com, then the subdomain will
+		//be a blank string.
 	
-	if(verbose == true) console.log("Subdomain: " + subdomain);
+		if(verbose == true) console.log("Subdomain: " + subdomain);
 	
-	return subdomain;
-
+	
+		return subdomain;
+	} else {
+		return "";
+	}
 
 }
 
@@ -512,7 +516,7 @@ function handleServer(_req, _res) {
 	var res = _res;
 	var body = [];
 	
-	var subdomain = determineSubdomain();
+	var subdomain = determineSubdomain(req);
 	
 	//Start ordinary error handling
 	req.on('error', function(err) {
