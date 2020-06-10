@@ -570,6 +570,10 @@ function handleServer(_req, _res) {
 			
 		}
 		
+		if(params.subdomain) {		//Override the subdomain
+			subdomain = params.subdomain;
+		}
+		
 		if(cookies.lang) {
 			//A language modifier exists
 			  var time = msg.msgs[cookies.lang].time;
