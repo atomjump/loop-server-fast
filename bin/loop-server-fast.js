@@ -388,15 +388,19 @@ function cleanData(str)
 
 
 function trimChar(string, charToRemove) {
-    while(string.substring(0,1) == charToRemove) {
-        string = string.substring(1);
-    }
+    if(string) {
+		while(string.substring(0,1) == charToRemove) {
+			string = string.substring(1);
+		}
 
-    while(string.slice(-1) == charToRemove) {
-        string = string.slice(0, -1); 
+		while(string.slice(-1) == charToRemove) {
+			string = string.slice(0, -1); 
+		}
+	
+    	return string;
+    } else {
+    	return null;
     }
-
-    return string;
 }
 
 
@@ -483,19 +487,18 @@ function determineSubdomain(req) {
 		//Handle any subdomains in our 
 		if(verbose == true) console.log("Requesting: " + req.headers.host);
 	
-		//req.headers.host = eg. "outerfast.atomjump.com"
+		//req.headers.host = eg. "outer.fast.atomjump.com"
 	
 		//"readURL" : "https://[subdomain]fast.atomjump.com",
 		var myReadURL = cnf.readURL.replace("https://", "");
 		myReadURL = myReadURL.replace("http://","");
 	
 		//Now myReadURL = e.g. "[subdomain]fast.atomjump.com"
-		//req.headers.host = eg. "outerfast.atomjump.com"
+		//req.headers.host = eg. "outer.fast.atomjump.com"
 		//We want to find "outer".
-		var noSubReadURL = myReadURL.replace("[subdomain]","");  //becomes e.g. fast.atomjump.com	
+		var noSubReadURL = myReadURL.replace("[subdomain]","");  //becomes e.g. .fast.atomjump.com	
 	
-		var subdomain = req.headers.host.replace(noSubReadURL,"");	//Strip off the non-subdomain url. If we are at the same host e.g. atomjump.com, then the subdomain will
-		//be a blank string.
+		var subdomain = req.headers.host.replace(noSubReadURL,"");	//Strip off the non-subdomain url. Becomes outer. If we are at the same host e.g. atomjump.com, then the subdomain will be a blank string.
 	
 		if(verbose == true) console.log("Subdomain: " + subdomain);
 	
