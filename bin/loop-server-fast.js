@@ -574,9 +574,18 @@ function handleServer(_req, _res) {
 			subdomain = params.subdomain;
 		}
 		
+		var mylang = null;
 		if(cookies.lang) {
+			//If we are set in the cookies
+			mylang = cookies.lang;
+		}
+		if(params.lang) {
+			//Or set by a passed in parameter
+			mylang = params.lang;
+		}
+		if(mylang) {
 			//A language modifier exists
-			  var time = msg.msgs[cookies.lang].time;
+			  var time = msg.msgs[mylang].time;
 			  params.timeUnits = [
 				{ name: time.second, plural: time.seconds, limit: 60, in_seconds: 1 },
 				{ name: time.minute, plural: time.minutes, limit: 3600, in_seconds: 60 },
