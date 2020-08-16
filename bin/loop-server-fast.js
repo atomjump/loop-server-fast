@@ -714,7 +714,7 @@ function showTranslatedNumber(number, translationTable) {
 	*/
 	
 	if(translationTable) {
-		if(isInteger(number)) {
+		if(Number.isInteger(number)) {
 			if(translationTable[number]) {
 				return translationTable[number];
 			} else {
