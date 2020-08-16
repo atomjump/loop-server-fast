@@ -677,7 +677,56 @@ function parseCookies (request) {
 }
 
 
-function ago(timeStr, thisTimeUnits, agoWord) {
+function showTranslatedNumber(number, translationTable) {
+	/* PHP Function this is based on
+	function show_translated_number($number, $lang)
+	{
+		//Input, ideally an integer between 0 - 60 (60 seconds in a minute means this
+		//is usually the largest number we need for most things, i.e. 59 seconds ago). 
+		//However, any number can be used and the default is to return the English number
+		//if there is no matching number in the messages array "number" conversion for the
+		//input language.
+		global $msg;
+		
+		if($msg['msgs'][$lang]['numbers']) {
+			//Yes the numbers array exists for this language
+			//Check definitely an integer
+			if(is_int($number)) {
+				if($msg['msgs'][$lang]['numbers'][$number]) {
+					//Return the string if this is in the 'number' array as the indexed version of that number	
+					return $msg['msgs'][$lang]['numbers'][$number];
+				} else {
+					return $number;				
+				}			
+			} else {
+				return $number;
+			}
+		} else {
+			return $number;
+		}
+		
+	
+	}
+	*/
+	
+	if(translationTable) {
+		if(isInteger(number)) {
+			if(translationTable[number]) {
+				return translationTable[number];
+			} else {
+				return number;
+			}
+		} else {
+			return number;
+		}
+	} else {
+		return number;
+	}
+}
+
+
+
+function ago(timeStr, thisTimeUnits, agoWord, numbersTranslation) {
     
    
    
@@ -695,6 +744,7 @@ function ago(timeStr, thisTimeUnits, agoWord) {
   while (unit = thisTimeUnits[i]) {
     if ((diff < unit.limit) || (!unit.limit)){
       var diff =  Math.round(diff / unit.in_seconds);		//was floor
+      diff = showTranslatedNumber(diff, numbersTranslation);
       var timeOut = diff + " " + (diff>1 ? unit.plural : unit.name) + " " + agoWord;
       return timeOut;
     }
@@ -867,6 +917,12 @@ function foundLayer(params,
 			 thisTimeUnits = params.timeUnits;
 		  	 thisAgo = params.ago; 
 		  }
+		  if(params.numbersTranslation) {
+		  	var numbersTranslation = params.numbersTranslation;
+		  
+		  } else {
+		  	numbersTranslation = null;
+		  }
 		  
 		  
 		  for(var cnt = 0; cnt< rows.length; cnt++) {
@@ -952,7 +1008,7 @@ function foundLayer(params,
 						'lat': rows[cnt].latitude,
 						'lon': rows[cnt].longtiude,
 						'dist': rows[cnt].dist,
-						'ago': ago(rows[cnt].date_when_shouted, thisTimeUnits, thisAgo),
+						'ago': ago(rows[cnt].date_when_shouted, thisTimeUnits, thisAgo, numbersTranslation),
 						'whisper': whisper
 					
 					}
