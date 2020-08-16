@@ -597,6 +597,10 @@ function handleServer(_req, _res) {
 			  ];
 			  
 			  params.ago = time.ago;
+			   
+			  if(msg.msgs[mylang].numbers) {
+			  	params.numbersTranslation = msg.msgs[mylang].numbers;		//Get the number translation table for this language
+			  }
 		
 		}
 		
