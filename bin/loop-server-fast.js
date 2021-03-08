@@ -240,7 +240,7 @@ if(cnf.httpsKey) {
 				connections[group][hostCnt].end();
 			}
 			
-			console.log("Attempting to re-connect to the database host " + dbCnf.host);
+			console.log("Attempting to re-connect to the database host " + hostCnt + ":" + dbCnf.host);
  			connections[group][hostCnt] = mysql.createConnection({
 			  host     : dbCnf.host,
 			  user     : dbCnf.user,
@@ -255,7 +255,7 @@ if(cnf.httpsKey) {
  			var myGroup = group;
 			connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
 				if(err) {                                     // or restarting (takes a while sometimes).
-				  console.log('error when connecting to db ' + myHost + ':', err);
+				  console.log('error when connecting to db ' + hostCnt + ':' + myHost + ':', err);
 				  
 				  if(closing == false) {
 					setTimeout(handleDisconnect, 5000, myGroup, myHostCnt); // We introduce a delay before attempting to reconnect,
