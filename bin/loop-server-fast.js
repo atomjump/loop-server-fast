@@ -416,7 +416,6 @@ if(cnf.httpsKey) {
 				connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
 					if(err) {                                     // or restarting (takes a while sometimes).
 					  console.log('error when connecting to db ' + myHost + ':', err);
-					  closeAllConnections();
 					  
 					  if(closing == false) {
 					    setTimeout(handleDisconnect, 2000, myGroup, myHostCnt); // We introduce a delay before attempting to reconnect,
