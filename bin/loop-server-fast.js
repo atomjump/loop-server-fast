@@ -417,22 +417,21 @@ if(cnf.httpsKey) {
 				};
 				
 				
-				connections[groupPlusOne][cnt] = mysql.createConnection({
-				  host     : dbCnf.hosts[cnt],
-				  user     : dbCnf.user,
-				  password : dbCnf.pass,
-				  database : dbCnf.name,
-		  		  port     : dbCnf.port,
-		  		  ssl      : ssl
-				});
+				connections[groupPlusOne][cnt] = createConnection({
+							  host     : dbCnf.hosts[cnt],
+							  user     : dbCnf.user,
+							  password : dbCnf.pass,
+							  database : dbCnf.name,
+							  port     : dbCnf.port,
+							  ssl      : ssl
+							});
  
  				var myHost = dbCnf.hosts[cnt];
  				var myHostCnt = JSON.parse(JSON.stringify(cnt));		//Get a distinct copy, not a reference
  				var thisGroup = groupPlusOne;
  				var myGroup = JSON.parse(JSON.stringify(thisGroup));
- 				connections[myGroup][myHostCnt].thisGroup = thisGroup;
- 				connections[myGroup][myHostCnt].thisGroup = thisGroup;
-				connections[myGroup][myHostCnt].connect(function(err, myGroup, myHostCnt) {              // The server is either down
+ 				console.log(JSON.stringify(connections[myGroup][myHostCnt], 0, 5));		//TESTING
+				connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
 					var thisGroup = JSON.parse(JSON.stringify(myGroup));
             		var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
             		  
@@ -444,10 +443,10 @@ if(cnf.httpsKey) {
 					  }
 					} else {
 						console.log('Connected to scaleup db [' + this.thisGroup + '][' + thisHostCnt + '] OK');
-					
+						console.log('Connected as id ' + connections[myGroup][myHostCnt].threadId);
 					}
 					
-					console.log('Connected as id ' + connections[myGroup][myHostCnt].threadId);                                    // to avoid a hot loop, and to allow our node script to
+					                                    // to avoid a hot loop, and to allow our node script to
 				  });                                     // process asynchronous requests in the meantime.
 													  // If you're also serving http, display a 503 error.
 				 connections[myGroup][myHostCnt].on('error', function(err) {
