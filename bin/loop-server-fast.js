@@ -322,20 +322,22 @@ if(cnf.httpsKey) {
  
 		//connections[cnt].connect();
 		var myHost = cnf.db.hosts[cnt];
-		connections[0][cnt].connect(function(err) {              // The server is either down
+		var myHostCnt = cnt;
+ 		var myGroup = 0;
+		connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
 			if(err) {                                     // or restarting (takes a while sometimes).
 			  //Error on trying to connect - try again in 2 seconds
 			  console.log('error when connecting to db ' + myHost + ':', err);
 			  
 			  if(closing == false) {
 			    closing = true;
-			    setTimeout(handleDisconnect, 2000, 0, cnt); // We introduce a delay before attempting to reconnect,
+			    setTimeout(handleDisconnect, 2000, myGroup, myHostCnt); // We introduce a delay before attempting to reconnect,
 			  }
 			 
 			}                                     // to avoid a hot loop, and to allow our node script to
 		  });                                     // process asynchronous requests in the meantime.
 											  // If you're also serving http, display a 503 error.
-		 connections[0][cnt].on('error', function(err) {
+		 connections[myGroup][myHostCnt].on('error', function(err) {
 			console.log('db error: ', err);
 			 
 			 
@@ -346,13 +348,13 @@ if(cnf.httpsKey) {
 			 
 			  if(closing == false) {
 			    closing = true;
-			  	setTimeout(handleDisconnect, 2000, 0, cnt);                         // lost due to either server restart, or a
+			  	setTimeout(handleDisconnect, 2000, myGroup, myHostCnt);                         // lost due to either server restart, or a
 			  }
 			} else {                                      // connnection idle timeout (the wait_timeout
 			  //throw err;                                  // server variable configures this)
 			  if(closing == false) {
 			    closing = true;
-			  	setTimeout(handleDisconnect, 2000, 0, cnt);
+			  	setTimeout(handleDisconnect, 2000, myGroup, myHostCnt);
 			  }
 			  
 			}
@@ -381,7 +383,7 @@ if(cnf.httpsKey) {
  		
 			for(var cnt = 0; cnt< dbCnf.hosts.length; cnt++) {
 				
-				console.log("Connecting to the database host " + dbCnf.hosts[cnt]);
+				console.log("Connecting to the database host " + cnt + ":" + dbCnf.hosts[cnt]);
 				
 				dbConnectionsInfo[scaleCnt+1][cnt] = {
 					  host     : dbCnf.hosts[cnt],
@@ -403,20 +405,22 @@ if(cnf.httpsKey) {
 				});
  
  				var myHost = dbCnf.hosts[cnt];
+ 				var myHostCnt = cnt;
+ 				var myGroup = scaleCnt+1;
 				//connections[cnt].connect();
-				connections[scaleCnt+1][cnt].connect(function(err) {              // The server is either down
+				connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
 					if(err) {                                     // or restarting (takes a while sometimes).
 					  console.log('error when connecting to db ' + myHost + ':', err);
 					  closeAllConnections();
 					  
 					  if(closing == false) {
 			  		    closing = true;
-					    setTimeout(handleDisconnect, 2000, scaleCnt+1, cnt); // We introduce a delay before attempting to reconnect,
+					    setTimeout(handleDisconnect, 2000, myGroup, myHostCnt); // We introduce a delay before attempting to reconnect,
 					  }
 					}                                     // to avoid a hot loop, and to allow our node script to
 				  });                                     // process asynchronous requests in the meantime.
 													  // If you're also serving http, display a 503 error.
-				 connections[scaleCnt+1][cnt].on('error', function(err) {
+				 connections[myGroup][myHostCnt].on('error', function(err) {
 					console.log('db error: ', err);
 					  		
 					
@@ -424,14 +428,14 @@ if(cnf.httpsKey) {
 			  
 			  		  if(closing == false) {
 			  		    closing = true;
-					  	setTimeout(handleDisconnect, 2000, scaleCnt+1, cnt);                         // lost due to either server restart, or a
+					  	setTimeout(handleDisconnect, 2000, myGroup, myHostCnt);                         // lost due to either server restart, or a
 					  }
 					} else {                                      // connnection idle timeout (the wait_timeout
 					  //throw err;                                  // server variable configures this)
 					  
 					  if(closing == false) {
 					    closing = true;
-					  	setTimeout(handleDisconnect, 2000, scaleCnt+1, cnt);
+					  	setTimeout(handleDisconnect, 2000, myGroup, myHostCnt);
 					  }
 					}
 					     
