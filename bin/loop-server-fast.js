@@ -253,7 +253,6 @@ if(cnf.httpsKey) {
 				  console.log('error when connecting to db ' + myHost + ':', err);
 				  
 				  if(closing == false) {
-					closing = true;
 					setTimeout(handleDisconnect, 2000, myGroup, myHostCnt); // We introduce a delay before attempting to reconnect,
 				  }
 				}                                     // to avoid a hot loop, and to allow our node script to
@@ -266,14 +265,12 @@ if(cnf.httpsKey) {
 				  //Close and restart all the connections
 		  
 				  if(closing == false) {
-					closing = true;
 					setTimeout(handleDisconnect, 2000, myGroup, myHostCnt);                         // lost due to either server restart, or a
 				  }
 				} else {                                      // connnection idle timeout (the wait_timeout
 				  //throw err;                                  // server variable configures this)
 				  
 				  if(closing == false) {
-					closing = true;
 					setTimeout(handleDisconnect, 2000, myGroup, myHostCnt);
 				  }
 				}
@@ -334,7 +331,6 @@ if(cnf.httpsKey) {
 			  console.log('error when connecting to db ' + myHost + ':', err);
 			  
 			  if(closing == false) {
-			    closing = true;
 			    setTimeout(handleDisconnect, 2000, myGroup, myHostCnt); // We introduce a delay before attempting to reconnect,
 			  }
 			 
@@ -351,13 +347,11 @@ if(cnf.httpsKey) {
 			  
 			 
 			  if(closing == false) {
-			    closing = true;
 			  	setTimeout(handleDisconnect, 2000, myGroup, myHostCnt);                         // lost due to either server restart, or a
 			  }
 			} else {                                      // connnection idle timeout (the wait_timeout
 			  //throw err;                                  // server variable configures this)
 			  if(closing == false) {
-			    closing = true;
 			  	setTimeout(handleDisconnect, 2000, myGroup, myHostCnt);
 			  }
 			  
@@ -418,7 +412,6 @@ if(cnf.httpsKey) {
 					  closeAllConnections();
 					  
 					  if(closing == false) {
-			  		    closing = true;
 					    setTimeout(handleDisconnect, 2000, myGroup, myHostCnt); // We introduce a delay before attempting to reconnect,
 					  }
 					}                                     // to avoid a hot loop, and to allow our node script to
@@ -431,14 +424,12 @@ if(cnf.httpsKey) {
 					if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
 			  
 			  		  if(closing == false) {
-			  		    closing = true;
 					  	setTimeout(handleDisconnect, 2000, myGroup, myHostCnt);                         // lost due to either server restart, or a
 					  }
 					} else {                                      // connnection idle timeout (the wait_timeout
 					  //throw err;                                  // server variable configures this)
 					  
 					  if(closing == false) {
-					    closing = true;
 					  	setTimeout(handleDisconnect, 2000, myGroup, myHostCnt);
 					  }
 					}
