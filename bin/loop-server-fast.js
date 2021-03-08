@@ -229,9 +229,7 @@ if(cnf.httpsKey) {
  	//Optional. If this is a single disconnection, then we can handle this case first and return.
  	console.log("Call to handleDisconnect() Group:" + group + " hostCnt:" + hostCnt);		//TESTING
  	if((!group) || (!hostCnt)) {		//If either is not null
- 		
- 		{
-		console.log("Attempt a single exit point");		//TESTING
+ 		console.log("Attempt a single exit point");		//TESTING
 		return;
 		
 			//console.log("Group: " + group + "  Host:" + hostCnt);
