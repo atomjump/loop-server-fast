@@ -432,7 +432,7 @@ if(cnf.httpsKey) {
  				var myGroup = JSON.parse(JSON.stringify(thisGroup));
  				connections[myGroup][myHostCnt].thisGroup = thisGroup;
  				connections[myGroup][myHostCnt].thisGroup = thisGroup;
-				connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
+				connections[myGroup][myHostCnt].connect(function(err, myGroup, myHostCnt) {              // The server is either down
 					var thisGroup = JSON.parse(JSON.stringify(myGroup));
             		var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
             		  
