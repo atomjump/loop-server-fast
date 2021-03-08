@@ -207,7 +207,7 @@ if(cnf.httpsKey) {
  }
  
  
- function handleDisconnect(group, host) {
+ function handleDisconnect(group, hostCnt) {
  
  	//Check for a different database
  	/*
@@ -227,16 +227,16 @@ if(cnf.httpsKey) {
  	//Inputs group: the 1st array index of connections[group][]
  	//       connection: the 2nd array index of connections[][connection]
  	//Optional. If this is a single disconnection, then we can handle this case first and return.
- 	if(group || host) {
+ 	if(group || hostCnt) {
 
-			console.log("Group: " + group + "  Host:" + host);
+			console.log("Group: " + group + "  Host:" + hostCnt);
 			console.log("dbConnections : " + JSON.stringify(dbConnectionsInfo, null, 5));
 			if(!group) var group = 0;
-			if(!host) var host = 0;
-			var dbCnf = dbConnectionsInfo[group];
+			if(!hostCnt) var hostCnt = 0;
+			var dbCnf = dbConnectionsInfo[group][host];
 			
 			console.log("Attempting to re-connect to the database host " + dbCnf.host);
- 			connections[group][host] = mysql.createConnection({
+ 			connections[group][hostCnt] = mysql.createConnection({
 			  host     : dbCnf.host,
 			  user     : dbCnf.user,
 			  password : dbCnf.pass,
@@ -246,9 +246,9 @@ if(cnf.httpsKey) {
 			});
 			
 			var myHost = dbCnf.host;
-			var myHostCnt = host;
+			var myHostCnt = hostCnt;
  			var myGroup = group;
-			connections[group][host].connect(function(err) {              // The server is either down
+			connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
 				if(err) {                                     // or restarting (takes a while sometimes).
 				  console.log('error when connecting to db ' + myHost + ':', err);
 				  
@@ -259,7 +259,7 @@ if(cnf.httpsKey) {
 				}                                     // to avoid a hot loop, and to allow our node script to
 			  });                                     // process asynchronous requests in the meantime.
 												  // If you're also serving http, display a 503 error.
-			 connections[group][host].on('error', function(err) {
+			 connections[myGroup][myHostCnt].on('error', function(err) {
 				console.log('db error: ', err);				
 				
 				if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
