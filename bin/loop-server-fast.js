@@ -228,13 +228,7 @@ if(cnf.httpsKey) {
  	//       connection: the 2nd array index of connections[][connection]
  	//Optional. If this is a single disconnection, then we can handle this case first and return.
  	if(group || host) {
- 			if(dbCnf.ssl && dbCnf.ssl.use === true) {
-				var ssl =  {
-					ca : fs.readFileSync(dbCnf.ssl.capath)
-	  			};
-			} else {
-				var ssl = null;
-			}
+
 			
 			if(!group) group = 0;
 			if(!connection) connection = 0;
@@ -294,7 +288,13 @@ if(cnf.httpsKey) {
  	dbConnectionsInfo[0] = {};
 	for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
 
-		
+		if(dbCnf.ssl && dbCnf.ssl.use === true) {
+			var ssl =  {
+					ca : fs.readFileSync(dbCnf.ssl.capath)
+			};
+		} else {
+			var ssl = null;
+		}
 
 		console.log("Connecting to the database host " + cnf.db.hosts[cnt]);
 
