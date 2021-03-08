@@ -1185,7 +1185,8 @@ function searchProcess(params, cb) {
 						params.connection.query(sql, function(err, rows, fields) {
 					
 							if(err) {
-								console.log("Database error: " + err);
+								console.log("Going back to PHP. Database error: " + err);
+								cb("PHP", null);
 								return;
 							} else {
 								if((rows)&&(rows[0])) {
@@ -1202,6 +1203,13 @@ function searchProcess(params, cb) {
 								}
 							}
 						});
+					} else {
+						//The connection is no longer valid. We will be trying to reconnect in the background
+						//but for now we need to show the user something
+						console.log("Going back to PHP. Database error: " + err);
+						cb("PHP", null);
+						return;
+					
 					}
 					
 					
