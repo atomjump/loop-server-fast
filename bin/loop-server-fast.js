@@ -230,8 +230,8 @@ if(cnf.httpsKey) {
  	if(group || host) {
 
 			
-			if(!group) group = 0;
-			if(!connection) connection = 0;
+			if(!group) var group = 0;
+			if(!host) var host = 0;
 			var dbCnf = dbConnectionInfo[group];
 			
 			console.log("Re-connecting to the database host " + dbCnf.hosts[host]);
