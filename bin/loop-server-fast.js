@@ -233,7 +233,7 @@ if(cnf.httpsKey) {
 			console.log("dbConnections : " + JSON.stringify(dbConnectionsInfo, null, 5));
 			if(!group) var group = 0;
 			if(!hostCnt) var hostCnt = 0;
-			var dbCnf = dbConnectionsInfo[group][host];
+			var dbCnf = dbConnectionsInfo[group][hostCnt];
 			
 			console.log("Attempting to re-connect to the database host " + dbCnf.host);
  			connections[group][hostCnt] = mysql.createConnection({
