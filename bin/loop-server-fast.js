@@ -287,11 +287,11 @@ if(cnf.httpsKey) {
  	connections[0] = {};
  	dbConnectionsInfo[0] = {};
 	for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
-
-		if(cnf.ssl && cnf.ssl.use === true) {
+	
+		if(cnf.db.ssl && cnf.db.ssl.use === true) {
 			var ssl =  {
-					ca : fs.readFileSync(cnf.ssl.capath)
-			};
+    			ca : fs.readFileSync(cnf.db.ssl.capath)
+  			};
 		} else {
 			var ssl = null;
 		}
