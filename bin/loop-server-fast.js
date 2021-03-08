@@ -181,6 +181,7 @@ if(cnf.httpsKey) {
  }
  
  var connections = [];
+ var dbConnectionsInfo = [];
  
  var closing = false;	//This is a global shutting down from mysql flag
  function closeAllConnections() {
@@ -206,7 +207,7 @@ if(cnf.httpsKey) {
  }
  
  
- function handleDisconnect() {
+ function handleDisconnect(group, host) {
  
  	//Check for a different database
  	/*
@@ -223,23 +224,88 @@ if(cnf.httpsKey) {
 		}
  	*/
  	
+ 	//Inputs group: the 1st array index of connections[group][]
+ 	//       connection: the 2nd array index of connections[][connection]
+ 	//Optional. If this is a single disconnection, then we can handle this case first and return.
+ 	if(group || host) {
+ 			if(dbCnf.ssl && dbCnf.ssl.use === true) {
+				var ssl =  {
+					ca : fs.readFileSync(dbCnf.ssl.capath)
+	  			};
+			} else {
+				var ssl = null;
+			}
+			
+			if(!group) group = 0;
+			if(!connection) connection = 0;
+			var dbCnf = dbConnectionInfo[group];
+			
+			console.log("Re-connecting to the database host " + dbCnf.hosts[host]);
+ 			connections[group][host] = mysql.createConnection({
+			  host     : dbCnf.hosts[host],
+			  user     : dbCnf.user,
+			  password : dbCnf.pass,
+			  database : dbCnf.name,
+			  port     : dbCnf.port,
+			  ssl      : dbCnf.ssl
+			});
+			
+			var myHost = dbCnf.hosts[host];
+			connections[group][host].connect(function(err) {              // The server is either down
+				if(err) {                                     // or restarting (takes a while sometimes).
+				  console.log('error when connecting to db ' + myHost + ':', err);
+				  
+				  if(closing == false) {
+					closing = true;
+					setTimeout(handleDisconnect, 2000, scaleCnt+1, cnt); // We introduce a delay before attempting to reconnect,
+				  }
+				}                                     // to avoid a hot loop, and to allow our node script to
+			  });                                     // process asynchronous requests in the meantime.
+												  // If you're also serving http, display a 503 error.
+			 connections[group][host].on('error', function(err) {
+				console.log('db error: ', err);				
+				
+				if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+				  //Close and restart all the connections
+		  
+				  if(closing == false) {
+					closing = true;
+					setTimeout(handleDisconnect, 2000, group, host);                         // lost due to either server restart, or a
+				  }
+				} else {                                      // connnection idle timeout (the wait_timeout
+				  //throw err;                                  // server variable configures this)
+				  
+				  if(closing == false) {
+					closing = true;
+					setTimeout(handleDisconnect, 2000, group, host);
+				  }
+				}
+					 
+				
+			  });
+			
+ 	}
  	
  	
  
  	//Reconnect to all db hosts
  	console.log("Connecting to the database.");
  	connections[0] = {};
+ 	dbConnectionsInfo[0] = {};
 	for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
 
-		if(cnf.db.ssl && cnf.db.ssl.use === true) {
-			var ssl =  {
-    			ca : fs.readFileSync(cnf.db.ssl.capath)
-  			};
-		} else {
-			var ssl = null;
-		}
+		
 
 		console.log("Connecting to the database host " + cnf.db.hosts[cnt]);
+
+		dbConnectionsInfo[0][cnt] = {
+			 host     : cnf.db.hosts[cnt],
+			  user     : cnf.db.user,
+			  password : cnf.db.pass,
+			  database : cnf.db.name,
+			  port     : cnf.db.port,
+			  ssl      : cnf.db.ssl
+		};
 
 		connections[0][cnt] = mysql.createConnection({
 		  host     : cnf.db.hosts[cnt],
@@ -256,11 +322,10 @@ if(cnf.httpsKey) {
 			if(err) {                                     // or restarting (takes a while sometimes).
 			  //Error on trying to connect - try again in 2 seconds
 			  console.log('error when connecting to db ' + myHost + ':', err);
-			  closeAllConnections();
 			  
 			  if(closing == false) {
 			    closing = true;
-			    setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+			    setTimeout(handleDisconnect, 2000, 0, cnt); // We introduce a delay before attempting to reconnect,
 			  }
 			 
 			}                                     // to avoid a hot loop, and to allow our node script to
@@ -269,7 +334,6 @@ if(cnf.httpsKey) {
 		 connections[0][cnt].on('error', function(err) {
 			console.log('db error: ', err);
 			 
-			 closeAllConnections();
 			 
 			
 			if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
@@ -278,14 +342,13 @@ if(cnf.httpsKey) {
 			 
 			  if(closing == false) {
 			    closing = true;
-			  	setTimeout(handleDisconnect, 2000);                         // lost due to either server restart, or a
+			  	setTimeout(handleDisconnect, 2000, 0, cnt);                         // lost due to either server restart, or a
 			  }
 			} else {                                      // connnection idle timeout (the wait_timeout
 			  //throw err;                                  // server variable configures this)
-			  //closeAllConnections();
 			  if(closing == false) {
 			    closing = true;
-			  	setTimeout(handleDisconnect, 2000);
+			  	setTimeout(handleDisconnect, 2000, 0, cnt);
 			  }
 			  
 			}
@@ -299,6 +362,7 @@ if(cnf.httpsKey) {
  		for(var scaleCnt = 0; scaleCnt< cnf.db.scaleUp.length; scaleCnt++) {
  		
  			connections[scaleCnt+1] = [];
+ 			dbConnectionsInfo[scaleCnt+1] = [];
  			currentDbServer[scaleCnt+1] = 0;
  			dbCnf = cnf.db.scaleUp[scaleCnt];
  		
@@ -314,6 +378,16 @@ if(cnf.httpsKey) {
 			for(var cnt = 0; cnt< dbCnf.hosts.length; cnt++) {
 				
 				console.log("Connecting to the database host " + dbCnf.hosts[cnt]);
+				
+				dbConnectionsInfo[scaleCnt+1][cnt] = {
+					  host     : dbCnf.hosts[cnt],
+					  user     : dbCnf.user,
+					  password : dbCnf.pass,
+					  database : dbCnf.name,
+					  port     : dbCnf.port,
+					  ssl      : ssl
+				};
+				
 				
 				connections[scaleCnt+1][cnt] = mysql.createConnection({
 				  host     : dbCnf.hosts[cnt],
@@ -333,31 +407,27 @@ if(cnf.httpsKey) {
 					  
 					  if(closing == false) {
 			  		    closing = true;
-					    setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+					    setTimeout(handleDisconnect, 2000, scaleCnt+1, cnt); // We introduce a delay before attempting to reconnect,
 					  }
 					}                                     // to avoid a hot loop, and to allow our node script to
 				  });                                     // process asynchronous requests in the meantime.
 													  // If you're also serving http, display a 503 error.
 				 connections[scaleCnt+1][cnt].on('error', function(err) {
 					console.log('db error: ', err);
-					
-			  		closeAllConnections();
-			  		
+					  		
 					
 					if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
-					  //Close and restart all the connections
-					  //closeAllConnections();
 			  
 			  		  if(closing == false) {
 			  		    closing = true;
-					  	setTimeout(handleDisconnect, 2000);                         // lost due to either server restart, or a
+					  	setTimeout(handleDisconnect, 2000, scaleCnt+1, cnt);                         // lost due to either server restart, or a
 					  }
 					} else {                                      // connnection idle timeout (the wait_timeout
 					  //throw err;                                  // server variable configures this)
 					  
 					  if(closing == false) {
 					    closing = true;
-					  	setTimeout(handleDisconnect, 2000);
+					  	setTimeout(handleDisconnect, 2000, scaleCnt+1, cnt);
 					  }
 					}
 					     
