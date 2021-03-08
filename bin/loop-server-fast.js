@@ -240,7 +240,7 @@ if(cnf.httpsKey) {
 				connections[group][hostCnt].end();
 			}
 			
-			console.log("Attempting to re-connect to the database host " + dbCnf.host + " with u:" + dbCnf.user + " p:" + dbCnf.pass);
+			console.log("Attempting to re-connect to the database host " + dbCnf.host);
  			connections[group][hostCnt] = mysql.createConnection({
 			  host     : dbCnf.host,
 			  user     : dbCnf.user,
@@ -260,7 +260,9 @@ if(cnf.httpsKey) {
 				  if(closing == false) {
 					setTimeout(handleDisconnect, 5000, myGroup, myHostCnt); // We introduce a delay before attempting to reconnect,
 				  }
-				}                                     // to avoid a hot loop, and to allow our node script to
+				} else {	                                    // to avoid a hot loop, and to allow our node script to
+			  		console.log("Reconnected to " + myHost + " successfully.");
+			  	}
 			  });                                     // process asynchronous requests in the meantime.
 												  // If you're also serving http, display a 503 error.
 			 connections[myGroup][myHostCnt].on('error', function(err) {
