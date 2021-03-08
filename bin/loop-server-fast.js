@@ -444,7 +444,6 @@ if(cnf.httpsKey) {
 					    setTimeout(handleDisconnect, 2000, thisGroup, thisHostCnt); // We introduce a delay before attempting to reconnect,
 					  }
 					} else {
-						console.log(JSON.stringify(this, null, 5));
 						console.log('Connected to scaleup db [' + thisGroup + '][' + thisHostCnt + '] OK');
 						console.log('Connected as id ' + connections[thisGroup][thisHostCnt].threadId);
 					}
