@@ -240,7 +240,7 @@ if(cnf.httpsKey) {
 				connections[group][hostCnt].end();
 			}
 			
-			console.log("Attempting to re-connect to the database host " + hostCnt + ":" + dbCnf.host);
+			console.log("Attempting to re-connect to the database host [" + group + "][" + hostCnt + "]:" + dbCnf.host);
  			connections[group][hostCnt] = mysql.createConnection({
 			  host     : dbCnf.host,
 			  user     : dbCnf.user,
