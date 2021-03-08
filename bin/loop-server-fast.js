@@ -239,6 +239,8 @@ if(cnf.httpsKey) {
 			var ssl = null;
 		}
 
+		console.log("Connecting to the database host " + cnf.db.hosts[cnt]);
+
 		connections[0][cnt] = mysql.createConnection({
 		  host     : cnf.db.hosts[cnt],
 		  user     : cnf.db.user,
@@ -249,10 +251,11 @@ if(cnf.httpsKey) {
 		});
  
 		//connections[cnt].connect();
+		var myHost = cnf.db.hosts[cnt];
 		connections[0][cnt].connect(function(err) {              // The server is either down
 			if(err) {                                     // or restarting (takes a while sometimes).
 			  //Error on trying to connect - try again in 2 seconds
-			  console.log('error when connecting to db:', err);
+			  console.log('error when connecting to db ' + myHost + ':', err);
 			  closeAllConnections();
 			  
 			  if(closing == false) {
@@ -310,6 +313,8 @@ if(cnf.httpsKey) {
  		
 			for(var cnt = 0; cnt< dbCnf.hosts.length; cnt++) {
 				
+				console.log("Connecting to the database host " + dbCnf.hosts[cnt]);
+				
 				connections[scaleCnt+1][cnt] = mysql.createConnection({
 				  host     : dbCnf.hosts[cnt],
 				  user     : dbCnf.user,
@@ -319,10 +324,11 @@ if(cnf.httpsKey) {
 		  		  ssl      : ssl
 				});
  
+ 				var myHost = dbCnf.hosts[cnt];
 				//connections[cnt].connect();
 				connections[scaleCnt+1][cnt].connect(function(err) {              // The server is either down
 					if(err) {                                     // or restarting (takes a while sometimes).
-					  console.log('error when connecting to db:', err);
+					  console.log('error when connecting to db ' + myHost + ':', err);
 					  closeAllConnections();
 					  
 					  if(closing == false) {
