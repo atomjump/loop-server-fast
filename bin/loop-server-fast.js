@@ -335,51 +335,6 @@ if(cnf.httpsKey) {
 		
 		
  
-		//connections[cnt].connect();
-		var myHost = cnf.db.hosts[cnt];
-		var myHostCnt = JSON.parse(JSON.stringify(cnt));
- 		var myGroup = 0;
-		connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
-			var thisGroup = JSON.parse(JSON.stringify(myGroup));
-            var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
-			
-			if(err) {                                     // or restarting (takes a while sometimes).
-			  //Error on trying to connect - try again in 2 seconds
-			  console.log('Error when connecting to main db [' + myGroup + '][' + myHostCnt + ']:', err);
-			  
-			 
-			  if(closing == false) {
-			    setTimeout(handleDisconnect, 2000, thisGroup, thisHostCnt); // We introduce a delay before attempting to reconnect,
-			  }
-			 
-			} else {
-				console.log('Connected to main db [' + thisGroup + '][' + thisHostCnt + '] OK');
-				console.log('Connected as id ' + connections[myGroup][myHostCnt].threadId);
-			
-			}                                    // to avoid a hot loop, and to allow our node script to
-		  });                                     // process asynchronous requests in the meantime.
-											  // If you're also serving http, display a 503 error.
-		 connections[myGroup][myHostCnt].on('error', function(err) {
-			console.log('Db error on main database [' + myGroup + '][' + myHostCnt + ']:', err);
-			 
-			var thisGroup = JSON.parse(JSON.stringify(myGroup));
-            var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
-			
-			if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
-			  //Close and restart all the connections
-			  
-			  
-			  if(closing == false) {
-			  	setTimeout(handleDisconnect, 2000, thisGroup, thisHostCnt);                         // lost due to either server restart, or a
-			  }
-			} else {                                      // connnection idle timeout (the wait_timeout
-			  //throw err;                                  // server variable configures this)
-			  if(closing == false) {
-			  	setTimeout(handleDisconnect, 2000, thisGroup, thisHostCnt);
-			  }
-			  
-			}
-		  });
 
 
 	}
@@ -425,58 +380,104 @@ if(cnf.httpsKey) {
 							  port     : dbCnf.port,
 							  ssl      : ssl
 							});
- 
- 				var myHost = dbCnf.hosts[cnt];
- 				var myHostCnt = JSON.parse(JSON.stringify(cnt));		//Get a distinct copy, not a reference
- 				var thisGroup = groupPlusOne;
- 				var myGroup = JSON.parse(JSON.stringify(thisGroup));
- 				connections[myGroup][myHostCnt].group = myGroup;
- 				connections[myGroup][myHostCnt].hostCnt = myHostCnt;
- 				console.log("myGroup" + myGroup);
- 				connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
-					var thisGroup = JSON.parse(JSON.stringify(myGroup));
-            		var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
-            		  
-					if(err) {                                     // or restarting (takes a while sometimes).
-					  console.log('Error when connecting to scaleup db [' + myGroup + '][' + myHostCnt + ']:', err);
-					  
-					  if(closing == false) {
-					    setTimeout(handleDisconnect, 2000, thisGroup, thisHostCnt); // We introduce a delay before attempting to reconnect,
-					  }
-					} else {
-						console.log('Connected to scaleup db [' + thisGroup + '][' + thisHostCnt + '] OK');
-						console.log('Connected as id ' + connections[thisGroup][thisHostCnt].threadId);
-					}
-					
-					                                    // to avoid a hot loop, and to allow our node script to
-				  });                                     // process asynchronous requests in the meantime.
-													  // If you're also serving http, display a 503 error.
-				 connections[myGroup][myHostCnt].on('error', function(err) {
-					console.log('Db error on scaleup database [' + myGroup + '][' + myHostCnt + ']:', err);
-					  		
-					var thisGroup = JSON.parse(JSON.stringify(myGroup));
-            		var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
-					if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
-			  
-			  		  if(closing == false) {
-					  	setTimeout(handleDisconnect, 2000, thisGroup, thisHostCnt);                         // lost due to either server restart, or a
-					  }
-					} else {                                      // connnection idle timeout (the wait_timeout
-					  //throw err;                                  // server variable configures this)
-					  
-					  if(closing == false) {
-					  	setTimeout(handleDisconnect, 2000, thisGroup, thisHostCnt);
-					  }
-					}
-					     
-					
-				  });
 
 
 			}
 		}
  		
  	}
+ 	
+ 	//Now we have created all of the connections, we will connect to them asyncronously.
+ 	//Create single array
+ 	var singleDimConnections = [];
+ 	for(var groupCnt = 0; groupCnt < dbConnectionsInfo.length; groupCnt++) {
+ 		for(var hostCnt = 0; hostCnt < dbConnectionsInfo[groupCnt].length; hostCnt++) {
+ 			singleDimConnections.push({
+ 				group: groupCnt,
+ 				host: dbConnectionsInfo[groupCnt][hostCnt].host,
+ 				hostCnt: hostCnt
+ 			});
+ 		
+ 		}
+ 		
+ 	}
+ 	
+ 	
+ 	async.eachOf(singleDimConnections,
+		// 2nd param is the function that each item is passed to
+		function(runBlock, cnt, callback){
+
+		
+		var myHost = runBlock.host;
+		var myHostCnt = runBlock.hostCnt;
+		var myGroup = runBlock.group;
+		connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
+			var thisGroup = JSON.parse(JSON.stringify(myGroup));
+			var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
+
+			if(err) {                                     // or restarting (takes a while sometimes).
+			  //Error on trying to connect - try again in 2 seconds
+			  console.log('Error when connecting to main db [' + myGroup + '][' + myHostCnt + ']:', err);
+  
+ 
+			  if(closing == false) {
+				setTimeout(handleDisconnect, 2000, thisGroup, thisHostCnt); // We introduce a delay before attempting to reconnect,
+			  }
+ 
+			} else {
+				console.log('Connected to main db [' + thisGroup + '][' + thisHostCnt + '] OK');
+				console.log('Connected as id ' + connections[myGroup][myHostCnt].threadId);
+
+			}                                    // to avoid a hot loop, and to allow our node script to
+		  });                                     // process asynchronous requests in the meantime.
+											  // If you're also serving http, display a 503 error.
+		 connections[myGroup][myHostCnt].on('error', function(err) {
+			console.log('Db error on main database [' + myGroup + '][' + myHostCnt + ']:', err);
+ 
+			var thisGroup = JSON.parse(JSON.stringify(myGroup));
+			var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
+
+			if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+			  //Close and restart all the connections
+  
+  
+			  if(closing == false) {
+				setTimeout(handleDisconnect, 2000, thisGroup, thisHostCnt);                         // lost due to either server restart, or a
+			  }
+			} else {                                      // connnection idle timeout (the wait_timeout
+			  //throw err;                                  // server variable configures this)
+			  if(closing == false) {
+				setTimeout(handleDisconnect, 2000, thisGroup, thisHostCnt);
+			  }
+  
+			}
+		  });
+
+
+
+		
+		
+		},	//End of async eachOf single item
+		  function(err){
+			// All tasks are done now
+			if(err) {
+			   console.log('ERR:' + err);
+			   
+			 } else {
+			   console.log('Completed all database connections.');					   
+			   
+			 }
+		   }
+	); //End of async eachOf all items
+ 	
+ 	
+ 	
+ 	
+ 			
+
+
+ 	
+ 	
  	
  	if(closing == true) {
  		//Have finished getting db connections
