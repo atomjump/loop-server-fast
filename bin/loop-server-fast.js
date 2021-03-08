@@ -258,7 +258,7 @@ if(cnf.httpsKey) {
 				  console.log('error when connecting to db ' + myHost + ':', err);
 				  
 				  if(closing == false) {
-					setTimeout(handleDisconnect, 2000, myGroup, myHostCnt); // We introduce a delay before attempting to reconnect,
+					setTimeout(handleDisconnect, 5000, myGroup, myHostCnt); // We introduce a delay before attempting to reconnect,
 				  }
 				}                                     // to avoid a hot loop, and to allow our node script to
 			  });                                     // process asynchronous requests in the meantime.
@@ -270,13 +270,13 @@ if(cnf.httpsKey) {
 				  //Close and restart all the connections
 		  
 				  if(closing == false) {
-					setTimeout(handleDisconnect, 2000, myGroup, myHostCnt);                         // lost due to either server restart, or a
+					setTimeout(handleDisconnect, 5000, myGroup, myHostCnt);                         // lost due to either server restart, or a
 				  }
 				} else {                                      // connnection idle timeout (the wait_timeout
 				  //throw err;                                  // server variable configures this)
 				  
 				  if(closing == false) {
-					setTimeout(handleDisconnect, 2000, myGroup, myHostCnt);
+					setTimeout(handleDisconnect, 5000, myGroup, myHostCnt);
 				  }
 				}
 					 
@@ -309,9 +309,9 @@ if(cnf.httpsKey) {
 		console.log("Connecting to the database host " + cnf.db.hosts[cnt]);
 
 		dbConnectionsInfo[0][cnt] = {
-			 host     : cnf.db.hosts[cnt],
+			  host     : cnf.db.hosts[cnt],
 			  user     : cnf.db.user,
-			  password : cnf.db.pass,
+			  pass : cnf.db.pass,
 			  database : cnf.db.name,
 			  port     : cnf.db.port,
 			  ssl      : ssl
@@ -391,7 +391,7 @@ if(cnf.httpsKey) {
 				dbConnectionsInfo[scaleCnt+1][cnt] = {
 					  host     : dbCnf.hosts[cnt],
 					  user     : dbCnf.user,
-					  password : dbCnf.pass,
+					  pass	   : dbCnf.pass,
 					  database : dbCnf.name,
 					  port     : dbCnf.port,
 					  ssl      : ssl
