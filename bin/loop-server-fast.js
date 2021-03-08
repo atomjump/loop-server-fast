@@ -469,14 +469,7 @@ if(cnf.httpsKey) {
 			 }
 		   }
 	); //End of async eachOf all items
- 	
- 	
- 	
- 	
- 			
-
-
- 	
+ 	 	
  	
  	
  	if(closing == true) {
