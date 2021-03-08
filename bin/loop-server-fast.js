@@ -264,6 +264,7 @@ if(cnf.httpsKey) {
 				  }
 				} else {	                                    // to avoid a hot loop, and to allow our node script to
 			  		console.log("Reconnected to " + myHost + " successfully.");
+			  		console.log('Connected as id ' + connection.threadId);
 			  	}
 			  });                                     // process asynchronous requests in the meantime.
 												  // If you're also serving http, display a 503 error.
@@ -353,6 +354,7 @@ if(cnf.httpsKey) {
 			 
 			} else {
 				console.log('Connected to main db [' + thisGroup + '][' + thisHostCnt + '] OK');
+				console.log('Connected as id ' + connection.threadId);
 			
 			}                                    // to avoid a hot loop, and to allow our node script to
 		  });                                     // process asynchronous requests in the meantime.
@@ -429,6 +431,7 @@ if(cnf.httpsKey) {
  				var thisGroup = groupPlusOne;
  				var myGroup = JSON.parse(JSON.stringify(thisGroup));
  				connections[myGroup][myHostCnt].thisGroup = thisGroup;
+ 				connections[myGroup][myHostCnt].thisGroup = thisGroup;
 				connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
 					var thisGroup = JSON.parse(JSON.stringify(myGroup));
             		var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
@@ -442,7 +445,9 @@ if(cnf.httpsKey) {
 					} else {
 						console.log('Connected to scaleup db [' + this.thisGroup + '][' + thisHostCnt + '] OK');
 					
-					}                                    // to avoid a hot loop, and to allow our node script to
+					}
+					
+					console.log('Connected as id ' + connection.threadId);                                    // to avoid a hot loop, and to allow our node script to
 				  });                                     // process asynchronous requests in the meantime.
 													  // If you're also serving http, display a 503 error.
 				 connections[myGroup][myHostCnt].on('error', function(err) {
