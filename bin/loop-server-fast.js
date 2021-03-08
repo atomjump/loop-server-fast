@@ -229,8 +229,8 @@ if(cnf.httpsKey) {
  	//Optional. If this is a single disconnection, then we can handle this case first and return.
  	if(group || hostCnt) {
 
-			console.log("Group: " + group + "  Host:" + hostCnt);
-			console.log("dbConnections : " + JSON.stringify(dbConnectionsInfo, null, 5));
+			//console.log("Group: " + group + "  Host:" + hostCnt);
+			//console.log("dbConnections : " + JSON.stringify(dbConnectionsInfo, null, 5));
 			if(!group) var group = 0;
 			if(!hostCnt) var hostCnt = 0;
 			var dbCnf = dbConnectionsInfo[group][hostCnt];
@@ -308,7 +308,7 @@ if(cnf.httpsKey) {
 			var ssl = null;
 		}
 
-		console.log("Connecting to the database host " + cnf.db.hosts[cnt]);
+		console.log("Connecting to the main database host " + cnt + ":" + cnf.db.hosts[cnt]);
 
 		dbConnectionsInfo[0][cnt] = {
 			  host     : cnf.db.hosts[cnt],
@@ -388,7 +388,7 @@ if(cnf.httpsKey) {
  		
 			for(var cnt = 0; cnt< dbCnf.hosts.length; cnt++) {
 				
-				console.log("Connecting to the database host " + cnt + ":" + dbCnf.hosts[cnt]);
+				console.log("Connecting to the scaleup database host " + cnt + ":" + dbCnf.hosts[cnt]);
 				
 				dbConnectionsInfo[scaleCnt+1][cnt] = {
 					  host     : dbCnf.hosts[cnt],
