@@ -430,8 +430,10 @@ if(cnf.httpsKey) {
  				var myHostCnt = JSON.parse(JSON.stringify(cnt));		//Get a distinct copy, not a reference
  				var thisGroup = groupPlusOne;
  				var myGroup = JSON.parse(JSON.stringify(thisGroup));
- 				console.log(JSON.stringify(connections[myGroup][myHostCnt], 0, 5));		//TESTING
-				connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
+ 				connections[myGroup][myHostCnt].group = myGroup;
+ 				connections[myGroup][myHostCnt].hostCnt = myHostCnt;
+ 				console.log("myGroup" + myGroup);
+ 				connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
 					var thisGroup = JSON.parse(JSON.stringify(myGroup));
             		var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
             		  
