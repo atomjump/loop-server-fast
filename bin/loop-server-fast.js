@@ -232,7 +232,7 @@ if(cnf.httpsKey) {
 			
 			if(!group) var group = 0;
 			if(!host) var host = 0;
-			var dbCnf = dbConnectionInfo[group];
+			var dbCnf = dbConnectionsInfo[group];
 			
 			console.log("Re-connecting to the database host " + dbCnf.hosts[host]);
  			connections[group][host] = mysql.createConnection({
