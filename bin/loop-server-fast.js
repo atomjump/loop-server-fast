@@ -237,7 +237,7 @@ if(cnf.httpsKey) {
 			
 			console.log("Attempting to re-connect to the database host " + dbCnf.hosts[host]);
  			connections[group][host] = mysql.createConnection({
-			  host     : dbCnf.hosts[host],
+			  host     : dbCnf.host,
 			  user     : dbCnf.user,
 			  password : dbCnf.pass,
 			  database : dbCnf.name,
@@ -245,14 +245,16 @@ if(cnf.httpsKey) {
 			  ssl      : dbCnf.ssl
 			});
 			
-			var myHost = dbCnf.hosts[host];
+			var myHost = dbCnf.host;
+			var myHostCnt = host;
+ 			var myGroup = group;
 			connections[group][host].connect(function(err) {              // The server is either down
 				if(err) {                                     // or restarting (takes a while sometimes).
 				  console.log('error when connecting to db ' + myHost + ':', err);
 				  
 				  if(closing == false) {
 					closing = true;
-					setTimeout(handleDisconnect, 2000, scaleCnt+1, cnt); // We introduce a delay before attempting to reconnect,
+					setTimeout(handleDisconnect, 2000, myGroup, myHostCnt); // We introduce a delay before attempting to reconnect,
 				  }
 				}                                     // to avoid a hot loop, and to allow our node script to
 			  });                                     // process asynchronous requests in the meantime.
@@ -265,20 +267,22 @@ if(cnf.httpsKey) {
 		  
 				  if(closing == false) {
 					closing = true;
-					setTimeout(handleDisconnect, 2000, group, host);                         // lost due to either server restart, or a
+					setTimeout(handleDisconnect, 2000, myGroup, myHostCnt);                         // lost due to either server restart, or a
 				  }
 				} else {                                      // connnection idle timeout (the wait_timeout
 				  //throw err;                                  // server variable configures this)
 				  
 				  if(closing == false) {
 					closing = true;
-					setTimeout(handleDisconnect, 2000, group, host);
+					setTimeout(handleDisconnect, 2000, myGroup, myHostCnt);
 				  }
 				}
 					 
 				
 			  });
-			
+			  
+			//And exit this reattempt.
+			return;
  	}
  	
  	
