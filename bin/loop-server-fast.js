@@ -417,7 +417,7 @@ if(cnf.httpsKey) {
 				};
 				
 				
-				connections[groupPlusOne][cnt] = createConnection({
+				connections[groupPlusOne][cnt] = mysql.createConnection({
 							  host     : dbCnf.hosts[cnt],
 							  user     : dbCnf.user,
 							  password : dbCnf.pass,
