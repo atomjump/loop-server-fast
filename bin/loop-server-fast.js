@@ -228,7 +228,9 @@ if(cnf.httpsKey) {
  	//       connection: the 2nd array index of connections[][connection]
  	//Optional. If this is a single disconnection, then we can handle this case first and return.
  	if(group || hostCnt) {
-
+		console.log("Attempt a single exit point");		//TESTING
+		return;
+		
 			//console.log("Group: " + group + "  Host:" + hostCnt);
 			//console.log("dbConnections : " + JSON.stringify(dbConnectionsInfo, null, 5));
 			if(!group) var group = 0;
