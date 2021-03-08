@@ -491,7 +491,7 @@ if(cnf.httpsKey) {
  
 }
  
-handleDisconnect();
+handleDisconnect(null, null);
 
 function escapeRegExp(str) {
     return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
