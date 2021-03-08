@@ -229,7 +229,7 @@ if(cnf.httpsKey) {
  	//Optional. If this is a single disconnection, then we can handle this case first and return.
  	if(group || host) {
 
-			
+			console.log("dbConnections : " + JSON.stringify(dbConnectionsInfo));
 			if(!group) var group = 0;
 			if(!host) var host = 0;
 			var dbCnf = dbConnectionsInfo[group];
