@@ -339,18 +339,20 @@ if(cnf.httpsKey) {
 		var myHostCnt = JSON.parse(JSON.stringify(cnt));
  		var myGroup = 0;
 		connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
+			var thisGroup = JSON.parse(JSON.stringify(myGroup));
+            var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
+			
 			if(err) {                                     // or restarting (takes a while sometimes).
 			  //Error on trying to connect - try again in 2 seconds
 			  console.log('Error when connecting to db [' + myGroup + '][' + myHostCnt + ']:', err);
 			  
-			  var thisGroup = JSON.parse(JSON.stringify(myGroup));
-              var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
+			 
 			  if(closing == false) {
 			    setTimeout(handleDisconnect, 2000, thisGroup, thisHostCnt); // We introduce a delay before attempting to reconnect,
 			  }
 			 
 			} else {
-				console.log('Connected to db [' + myGroup + '][' + myHostCnt + '] OK');
+				console.log('Connected to db [' + thisGroup + '][' + thisHostCnt + '] OK');
 			
 			}                                    // to avoid a hot loop, and to allow our node script to
 		  });                                     // process asynchronous requests in the meantime.
@@ -384,9 +386,10 @@ if(cnf.httpsKey) {
 		//Create more connections
  		for(var scaleCnt = 0; scaleCnt< cnf.db.scaleUp.length; scaleCnt++) {
  		
- 			connections[scaleCnt+1] = [];
- 			dbConnectionsInfo[scaleCnt+1] = [];
- 			currentDbServer[scaleCnt+1] = 0;
+ 			groupPlusOne = scaleCnt+1;
+ 			connections[groupPlusOne] = [];
+ 			dbConnectionsInfo[groupPlusOne] = [];
+ 			currentDbServer[groupPlusOne] = 0;
  			dbCnf = cnf.db.scaleUp[scaleCnt];
  		
 	 		if(dbCnf.ssl && dbCnf.ssl.use === true) {
@@ -400,9 +403,9 @@ if(cnf.httpsKey) {
  		
 			for(var cnt = 0; cnt< dbCnf.hosts.length; cnt++) {
 				
-				console.log("Connecting to the scaleup database host [" + scaleCnt + "][" + cnt + "]:" + dbCnf.hosts[cnt]);
+				console.log("Connecting to the scaleup database host [" + groupPlusOne + "][" + cnt + "]:" + dbCnf.hosts[cnt]);
 				
-				dbConnectionsInfo[scaleCnt+1][cnt] = {
+				dbConnectionsInfo[groupPlusOne][cnt] = {
 					  host     : dbCnf.hosts[cnt],
 					  user     : dbCnf.user,
 					  pass	   : dbCnf.pass,
@@ -412,7 +415,7 @@ if(cnf.httpsKey) {
 				};
 				
 				
-				connections[scaleCnt+1][cnt] = mysql.createConnection({
+				connections[groupPlusOne][cnt] = mysql.createConnection({
 				  host     : dbCnf.hosts[cnt],
 				  user     : dbCnf.user,
 				  password : dbCnf.pass,
@@ -423,18 +426,20 @@ if(cnf.httpsKey) {
  
  				var myHost = dbCnf.hosts[cnt];
  				var myHostCnt = JSON.parse(JSON.stringify(cnt));		//Get a distinct copy, not a reference
- 				var thisGroup = scaleCnt+1;
+ 				var thisGroup = groupPlusOne;
  				var myGroup = JSON.parse(JSON.stringify(thisGroup));
 				connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
+					var thisGroup = JSON.parse(JSON.stringify(myGroup));
+            		var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
+            		  
 					if(err) {                                     // or restarting (takes a while sometimes).
 					  console.log('Error when connecting to db [' + myGroup + '][' + myHostCnt + ']:', err);
-					  var thisGroup = JSON.parse(JSON.stringify(myGroup));
-            		  var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
+					  
 					  if(closing == false) {
 					    setTimeout(handleDisconnect, 2000, thisGroup, thisHostCnt); // We introduce a delay before attempting to reconnect,
 					  }
 					} else {
-						console.log('Connected to db [' + myGroup + '][' + myHostCnt + '] OK');
+						console.log('Connected to db [' + thisGroup + '][' + thisHostCnt + '] OK');
 					
 					}                                    // to avoid a hot loop, and to allow our node script to
 				  });                                     // process asynchronous requests in the meantime.
