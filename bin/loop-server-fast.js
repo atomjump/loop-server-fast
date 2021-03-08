@@ -284,8 +284,11 @@ if(cnf.httpsKey) {
  
  	//Reconnect to all db hosts
  	console.log("Connecting to the database.");
- 	connections[0] = {};
- 	dbConnectionsInfo[0] = {};
+ 	connections[0] = [];
+ 	connections[0][0] = {};
+ 	dbConnectionsInfo[0] = [];
+ 	dbConnectionsInfo[0][0] = {};
+ 	
 	for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
 	
 		if(cnf.db.ssl && cnf.db.ssl.use === true) {
@@ -304,7 +307,7 @@ if(cnf.httpsKey) {
 			  password : cnf.db.pass,
 			  database : cnf.db.name,
 			  port     : cnf.db.port,
-			  ssl      : cnf.db.ssl
+			  ssl      : ssl
 		};
 
 		connections[0][cnt] = mysql.createConnection({
