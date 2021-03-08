@@ -344,7 +344,7 @@ if(cnf.httpsKey) {
 			
 			if(err) {                                     // or restarting (takes a while sometimes).
 			  //Error on trying to connect - try again in 2 seconds
-			  console.log('Error when connecting to db [' + myGroup + '][' + myHostCnt + ']:', err);
+			  console.log('Error when connecting to main db [' + myGroup + '][' + myHostCnt + ']:', err);
 			  
 			 
 			  if(closing == false) {
@@ -352,13 +352,13 @@ if(cnf.httpsKey) {
 			  }
 			 
 			} else {
-				console.log('Connected to db [' + thisGroup + '][' + thisHostCnt + '] OK');
+				console.log('Connected to main db [' + thisGroup + '][' + thisHostCnt + '] OK');
 			
 			}                                    // to avoid a hot loop, and to allow our node script to
 		  });                                     // process asynchronous requests in the meantime.
 											  // If you're also serving http, display a 503 error.
 		 connections[myGroup][myHostCnt].on('error', function(err) {
-			console.log('Db error on database [' + myGroup + '][' + myHostCnt + ']:', err);
+			console.log('Db error on main database [' + myGroup + '][' + myHostCnt + ']:', err);
 			 
 			var thisGroup = JSON.parse(JSON.stringify(myGroup));
             var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
@@ -434,19 +434,19 @@ if(cnf.httpsKey) {
             		var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
             		  
 					if(err) {                                     // or restarting (takes a while sometimes).
-					  console.log('Error when connecting to db [' + myGroup + '][' + myHostCnt + ']:', err);
+					  console.log('Error when connecting to scaleup db [' + myGroup + '][' + myHostCnt + ']:', err);
 					  
 					  if(closing == false) {
 					    setTimeout(handleDisconnect, 2000, thisGroup, thisHostCnt); // We introduce a delay before attempting to reconnect,
 					  }
 					} else {
-						console.log('Connected to db [' + this.thisGroup + '][' + thisHostCnt + '] OK');
+						console.log('Connected to scaleup db [' + this.thisGroup + '][' + thisHostCnt + '] OK');
 					
 					}                                    // to avoid a hot loop, and to allow our node script to
 				  });                                     // process asynchronous requests in the meantime.
 													  // If you're also serving http, display a 503 error.
 				 connections[myGroup][myHostCnt].on('error', function(err) {
-					console.log('Db error on database [' + myGroup + '][' + myHostCnt + ']:', err);
+					console.log('Db error on scaleup database [' + myGroup + '][' + myHostCnt + ']:', err);
 					  		
 					var thisGroup = JSON.parse(JSON.stringify(myGroup));
             		var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
