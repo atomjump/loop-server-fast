@@ -235,7 +235,12 @@ if(cnf.httpsKey) {
 			if(!hostCnt) var hostCnt = 0;
 			var dbCnf = dbConnectionsInfo[group][hostCnt];
 			
-			console.log("Attempting to re-connect to the database host " + dbCnf.host);
+			//End the old connection if it still exists.
+			if(connections[group][hostCnt]) {
+				connections[group][hostCnt].end();
+			}
+			
+			console.log("Attempting to re-connect to the database host " + dbCnf.host + " with u:" + dbCnf.user + " p:" + dbCnf.pass);
  			connections[group][hostCnt] = mysql.createConnection({
 			  host     : dbCnf.host,
 			  user     : dbCnf.user,
