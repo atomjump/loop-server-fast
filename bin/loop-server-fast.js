@@ -330,7 +330,7 @@ if(cnf.httpsKey) {
  
 		//connections[cnt].connect();
 		var myHost = cnf.db.hosts[cnt];
-		var myHostCnt = cnt;
+		var myHostCnt = JSON.parse(JSON.stringify(cnt));
  		var myGroup = 0;
 		connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
 			if(err) {                                     // or restarting (takes a while sometimes).
@@ -410,8 +410,8 @@ if(cnf.httpsKey) {
 				});
  
  				var myHost = dbCnf.hosts[cnt];
- 				var myHostCnt = cnt;
- 				var myGroup = scaleCnt+1;
+ 				var myHostCnt = JSON.parse(JSON.stringify(cnt));		//Get a distinct copy, not a reference
+ 				var myGroup = JSON.parse(JSON.stringify(scaleCnt+1));
 				//connections[cnt].connect();
 				connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
 					if(err) {                                     // or restarting (takes a while sometimes).
