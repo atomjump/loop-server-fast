@@ -288,9 +288,9 @@ if(cnf.httpsKey) {
  	dbConnectionsInfo[0] = {};
 	for(var cnt = 0; cnt< cnf.db.hosts.length; cnt++) {
 
-		if(dbCnf.ssl && dbCnf.ssl.use === true) {
+		if(cnf.ssl && cnf.ssl.use === true) {
 			var ssl =  {
-					ca : fs.readFileSync(dbCnf.ssl.capath)
+					ca : fs.readFileSync(cnf.ssl.capath)
 			};
 		} else {
 			var ssl = null;
