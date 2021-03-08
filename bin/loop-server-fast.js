@@ -229,12 +229,13 @@ if(cnf.httpsKey) {
  	//Optional. If this is a single disconnection, then we can handle this case first and return.
  	if(group || host) {
 
-			console.log("dbConnections : " + JSON.stringify(dbConnectionsInfo));
+			console.log("Group: " + group + "  Host:" + host);
+			console.log("dbConnections : " + JSON.stringify(dbConnectionsInfo, null, 5));
 			if(!group) var group = 0;
 			if(!host) var host = 0;
 			var dbCnf = dbConnectionsInfo[group];
 			
-			console.log("Re-connecting to the database host " + dbCnf.hosts[host]);
+			console.log("Attempting to re-connect to the database host " + dbCnf.hosts[host]);
  			connections[group][host] = mysql.createConnection({
 			  host     : dbCnf.hosts[host],
 			  user     : dbCnf.user,
