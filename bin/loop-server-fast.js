@@ -230,7 +230,6 @@ if(cnf.httpsKey) {
  	console.log("Call to handleDisconnect() Group:" + group + " hostCnt:" + hostCnt);		//TESTING
  	if(group != null) {		//If not null
  		console.log("Attempt a single exit point");		//TESTING
-		return;
 		
 			//console.log("Group: " + group + "  Host:" + hostCnt);
 			//console.log("dbConnections : " + JSON.stringify(dbConnectionsInfo, null, 5));
