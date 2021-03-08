@@ -264,7 +264,7 @@ if(cnf.httpsKey) {
 				  }
 				} else {	                                    // to avoid a hot loop, and to allow our node script to
 			  		console.log("Reconnected to " + myHost + " successfully.");
-			  		console.log('Connected as id ' + connection.threadId);
+			  		console.log('Connected as id ' + connections[myGroup][myHostCnt].threadId);
 			  	}
 			  });                                     // process asynchronous requests in the meantime.
 												  // If you're also serving http, display a 503 error.
@@ -354,7 +354,7 @@ if(cnf.httpsKey) {
 			 
 			} else {
 				console.log('Connected to main db [' + thisGroup + '][' + thisHostCnt + '] OK');
-				console.log('Connected as id ' + connection.threadId);
+				console.log('Connected as id ' + connections[myGroup][myHostCnt].threadId);
 			
 			}                                    // to avoid a hot loop, and to allow our node script to
 		  });                                     // process asynchronous requests in the meantime.
@@ -447,7 +447,7 @@ if(cnf.httpsKey) {
 					
 					}
 					
-					console.log('Connected as id ' + connection.threadId);                                    // to avoid a hot loop, and to allow our node script to
+					console.log('Connected as id ' + connections[myGroup][myHostCnt].threadId);                                    // to avoid a hot loop, and to allow our node script to
 				  });                                     // process asynchronous requests in the meantime.
 													  // If you're also serving http, display a 503 error.
 				 connections[myGroup][myHostCnt].on('error', function(err) {
