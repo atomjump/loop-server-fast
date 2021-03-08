@@ -251,11 +251,11 @@ if(cnf.httpsKey) {
 			});
 			
 			var myHost = dbCnf.host;
-			var myHostCnt = hostCnt;
- 			var myGroup = group;
+			var myHostCnt = JSON.parse(JSON.stringify(hostCnt));
+ 			var myGroup = JSON.parse(JSON.stringify(group));
 			connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
 				if(err) {                                     // or restarting (takes a while sometimes).
-				  console.log('error when connecting to db ' + myHostCnt + ':' + myHost + ':', err);
+				  console.log('Error when connecting to db [' + myGroup + '][' + myHostCnt + ']:' + myHost + ':', err);
 				  
 				  if(closing == false) {
 					setTimeout(handleDisconnect, 5000, myGroup, myHostCnt); // We introduce a delay before attempting to reconnect,
@@ -266,7 +266,7 @@ if(cnf.httpsKey) {
 			  });                                     // process asynchronous requests in the meantime.
 												  // If you're also serving http, display a 503 error.
 			 connections[myGroup][myHostCnt].on('error', function(err) {
-				console.log('db error: ', err);				
+				console.log('Db error on database [' + myGroup + '][' + myHostCnt + ']:', err);				
 				
 				if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
 				  //Close and restart all the connections
@@ -332,12 +332,12 @@ if(cnf.httpsKey) {
  
 		//connections[cnt].connect();
 		var myHost = cnf.db.hosts[cnt];
-		var myHostCnt = cnt;
+		var myHostCnt = JSON.parse(JSON.stringify(cnt));
  		var myGroup = 0;
 		connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
 			if(err) {                                     // or restarting (takes a while sometimes).
 			  //Error on trying to connect - try again in 2 seconds
-			  console.log('error when connecting to db ' + myHost + ':', err);
+			  console.log('Error when connecting to db [' + myGroup + '][' + myHostCnt + ']:', err);
 			  
 			  if(closing == false) {
 			    setTimeout(handleDisconnect, 2000, myGroup, myHostCnt); // We introduce a delay before attempting to reconnect,
@@ -347,7 +347,7 @@ if(cnf.httpsKey) {
 		  });                                     // process asynchronous requests in the meantime.
 											  // If you're also serving http, display a 503 error.
 		 connections[myGroup][myHostCnt].on('error', function(err) {
-			console.log('db error: ', err);
+			console.log('Db error on database [' + myGroup + '][' + myHostCnt + ']:', err);
 			 
 			 
 			
@@ -412,14 +412,12 @@ if(cnf.httpsKey) {
 				});
  
  				var myHost = dbCnf.hosts[cnt];
- 				var myHostCnt = cnt;		//Get a distinct copy, not a reference
- 				var myGroup = scaleCnt+1;
- 				//connections[myGroup][cnt].group = myGroup;
-				//connections[myGroup][cnt].hostCnt = myHostCnt;
-				//connections[cnt].connect();
+ 				var myHostCnt = JSON.parse(JSON.stringify(cnt));		//Get a distinct copy, not a reference
+ 				var thisGroup = scaleCnt+1;
+ 				var myGroup = JSON.parse(JSON.stringify(thisGroup));
 				connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
 					if(err) {                                     // or restarting (takes a while sometimes).
-					  console.log('error when connecting to db ' + myHost + ':', err);
+					  console.log('Error when connecting to db [' + myGroup + '][' + myHostCnt + ']:', err);
 					  
 					  if(closing == false) {
 					    setTimeout(handleDisconnect, 2000, myGroup, myHostCnt); // We introduce a delay before attempting to reconnect,
@@ -428,7 +426,7 @@ if(cnf.httpsKey) {
 				  });                                     // process asynchronous requests in the meantime.
 													  // If you're also serving http, display a 503 error.
 				 connections[myGroup][myHostCnt].on('error', function(err) {
-					console.log('db error: ', err);
+					console.log('Db error on database [' + myGroup + '][' + myHostCnt + ']:', err);
 					  		
 					
 					if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
