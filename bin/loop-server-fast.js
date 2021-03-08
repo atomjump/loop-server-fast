@@ -428,6 +428,7 @@ if(cnf.httpsKey) {
  				var myHostCnt = JSON.parse(JSON.stringify(cnt));		//Get a distinct copy, not a reference
  				var thisGroup = groupPlusOne;
  				var myGroup = JSON.parse(JSON.stringify(thisGroup));
+ 				connections[myGroup][myHostCnt].thisGroup = thisGroup;
 				connections[myGroup][myHostCnt].connect(function(err) {              // The server is either down
 					var thisGroup = JSON.parse(JSON.stringify(myGroup));
             		var thisHostCnt = JSON.parse(JSON.stringify(myHostCnt));
@@ -439,7 +440,7 @@ if(cnf.httpsKey) {
 					    setTimeout(handleDisconnect, 2000, thisGroup, thisHostCnt); // We introduce a delay before attempting to reconnect,
 					  }
 					} else {
-						console.log('Connected to db [' + thisGroup + '][' + thisHostCnt + '] OK');
+						console.log('Connected to db [' + this.thisGroup + '][' + thisHostCnt + '] OK');
 					
 					}                                    // to avoid a hot loop, and to allow our node script to
 				  });                                     // process asynchronous requests in the meantime.
