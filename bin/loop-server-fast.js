@@ -569,12 +569,44 @@ function httpHttpsCreateServer(options) {
 	try {
 		if(httpsFlag == true) {
 			console.log("Starting https server.");
-			https.createServer(options, handleServer).listen(listenPort);
+			https.createServer(options, handleServer).listen(listenPort, error => {
+			  if(error) {
+			  	//The server has some software or connection issue. Close all database connections
+				//so that these don't build up.
+				console.log(error);
+				closeAllConnections();
+				setTimeout(function() {
+					//2 seconds later the process kill it self to allow a restart via pm2 (but not one which
+					//is so quick that it instantly takes all other servers it is checking against down.
+					console.log("Clean exit.");
+					process.exit(0);
+				}, 2000);
+				return;
+			  } else {
+				console.log("Server started OK");
+			  }
+			});
 		
 		
 		} else {
 			console.log("Starting http server.");
-			http.createServer(handleServer).listen(listenPort);
+			http.createServer(handleServer).listen(listenPort, error => {
+			  if(error) {
+			  	//The server has some software or connection issue. Close all database connections
+				//so that these don't build up.
+				console.log(error);
+				closeAllConnections();
+				setTimeout(function() {
+					//2 seconds later the process kill it self to allow a restart via pm2 (but not one which
+					//is so quick that it instantly takes all other servers it is checking against down.
+					console.log("Clean exit.");
+					process.exit(0);
+				}, 2000);
+				return;
+			  } else {
+				console.log("Server started OK");
+			  }
+			});
 		}
 	} catch(err) {
 		//The server has some software or connection issue. Close all database connections
