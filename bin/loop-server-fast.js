@@ -206,6 +206,7 @@ if(cnf.httpsKey) {
  		for(var group = 0; group< connections.length; group++) {
  			for(var ccnt = 0; ccnt< connections[group].length; ccnt++) {
  				connections[group][ccnt].end();
+ 				console.log("Closed database connection [" + group + "][" + ccnt + "]");
  			}
  		}
 	}
