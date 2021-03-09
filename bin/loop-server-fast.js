@@ -57,17 +57,32 @@ currentDbServer[0] = 0;
 var usage = "Usage: node loop-server-fast.js config/path/config.json config/path/messages.json [-production]\n\nOr:\n\nnpm config set loop-server-fast:configFile /path/to/your/loop/server/config.json\nnpm config set loop-server-fast:messagesFile /path/to/your/loop/server/messages.json\n[npm config set loop-server-fast:production true]\nnpm run start\n\n";
 var defaultPHPScript = "search-chat.php?";
 var defaultPHPScriptLen = defaultPHPScript.length;
+var server;				//Single global http or https server.
 
 
 process.on('SIGINT', function() {
    //Cleanly handle a process kill
    console.log("Requesting a shutdown.");
    closeAllConnections();
+   server.close();
    setTimeout(function() {
     // 300ms later the process kill it self to allow a restart
     console.log("Clean exit.");
     process.exit(0);
   }, 300);
+});
+
+
+process.on('uncaughtException', function (err) {
+  console.log("Unhandled Exception, shutting down Server ...")
+  server.close();
+  console.log("Server closed!");
+  console.log(err);
+  setTimeout(function() {
+    // 300ms later the process kill it self to allow a restart
+    console.log("Clean exit.");
+    process.exit(0);
+  }, 2000);
 });
 
 
@@ -569,45 +584,14 @@ function httpHttpsCreateServer(options) {
 	try {
 		if(httpsFlag == true) {
 			console.log("Starting https server.");
-			https.createServer(options, handleServer).listen(listenPort, function(error) {
-			  if(error) {
-			  	//The server has some software or connection issue. Close all database connections
-				//so that these don't build up.
-				console.log(error);
-				closeAllConnections();
-				setTimeout(function() {
-					//2 seconds later the process kill it self to allow a restart via pm2 (but not one which
-					//is so quick that it instantly takes all other servers it is checking against down.
-					console.log("Clean exit.");
-					process.exit(0);
-				}, 2000);
-				return;
-			  } else {
-				console.log("Server started OK");
-			  }
-			});
-		
-		
+			server = https.createServer(options, handleServer);			//'server' is global
 		} else {
 			console.log("Starting http server.");
-			http.createServer(handleServer).listen(listenPort, function(error) {
-			  if(error) {
-			  	//The server has some software or connection issue. Close all database connections
-				//so that these don't build up.
-				console.log(error);
-				closeAllConnections();
-				setTimeout(function() {
-					//2 seconds later the process kill it self to allow a restart via pm2 (but not one which
-					//is so quick that it instantly takes all other servers it is checking against down.
-					console.log("Clean exit.");
-					process.exit(0);
-				}, 2000);
-				return;
-			  } else {
-				console.log("Server started OK");
-			  }
-			});
+			server = http.createServer(handleServer);					//'server' is global
 		}
+
+		server.listen(listenPort);
+		
 	} catch(err) {
 		//The server has some software or connection issue. Close all database connections
 		//so that these don't build up.
