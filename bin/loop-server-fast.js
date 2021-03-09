@@ -575,6 +575,7 @@ function httpHttpsCreateServer(options) {
 		} else {
 			console.log("Starting http server.");
 			http.createServer(handleServer).listen(listenPort);
+		}
 	} catch(err) {
 		//The server has some software or connection issue. Close all database connections
 		//so that these don't build up.
