@@ -63,10 +63,11 @@ var server;				//Single global http or https server.
 process.on('SIGINT', function() {
    //Cleanly handle a process kill
    console.log("Requesting a shutdown.");
-   closeAllConnections();
+   
    server.close();
    setTimeout(function() {
     // 300ms later the process kill it self to allow a restart
+    closeAllConnections();
     console.log("Clean exit.");
     process.exit(0);
   }, 300);
@@ -75,12 +76,13 @@ process.on('SIGINT', function() {
 
 process.on('uncaughtException', function (err) {
   console.log("Unhandled Exception, shutting down Server ...")
-  closeAllConnections();
+  
   server.close();
   console.log("Server closed!");
   console.log(err);
   setTimeout(function() {
     // 300ms later the process kill it self to allow a restart
+    closeAllConnections();
     console.log("Clean exit.");
     process.exit(0);
   }, 2000);
