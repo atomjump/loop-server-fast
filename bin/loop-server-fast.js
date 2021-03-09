@@ -186,25 +186,17 @@ if(cnf.httpsKey) {
  var closing = false;	//This is a global shutting down from mysql flag
  function closeAllConnections() {
  	if(closing == false) {		//Only do this once
-		for(var ccnt = 0; ccnt< cnf.db.hosts.length; ccnt++) {
-			if(connections[0][ccnt]) {
-				connections[0][ccnt].end();
-			}
-		}
-	
-		if(cnf.db.scaleUp) {
-			for(var scaleCnt = 0; scaleCnt< cnf.db.scaleUp.length; scaleCnt++) {
-				for(var ccnt = 0; ccnt< cnf.db.scaleUp[scaleCnt].hosts.length; ccnt++) {
-					if(connections[scaleCnt+1][ccnt]) {
-						connections[scaleCnt+1][ccnt].end();
-					}
-				}
-		
-			}
-		}
+ 	
+ 		closing = true;
+ 		for(var group = 0; group< connections.length; group++) {
+ 			for(var ccnt = 0; ccnt< connections[group].length; ccnt++) {
+ 				connections[group][ccnt].end();
+ 			}
+ 		}
 	}
  
  }
+
  
  
  function handleDisconnect(group, hostCnt) {
@@ -574,14 +566,25 @@ function readSession(params, cb)
 
 
 function httpHttpsCreateServer(options) {
-	if(httpsFlag == true) {
-		console.log("Starting https server.");
-		https.createServer(options, handleServer).listen(listenPort);
+	try {
+		if(httpsFlag == true) {
+			console.log("Starting https server.");
+			https.createServer(options, handleServer).listen(listenPort);
 		
 		
-	} else {
-		console.log("Starting http server.");
-		http.createServer(handleServer).listen(listenPort);
+		} else {
+			console.log("Starting http server.");
+			http.createServer(handleServer).listen(listenPort);
+	} catch(err) {
+		//The server has some software or connection issue. Close all database connections
+		//so that these don't build up.
+		closeAllConnections();
+		setTimeout(function() {
+			//2 seconds later the process kill it self to allow a restart via pm2 (but not one which
+			//is so quick that it instantly takes all other servers it is checking against down.
+			console.log("Clean exit.");
+			process.exit(0);
+		}, 2000);
 	}
 
 	
