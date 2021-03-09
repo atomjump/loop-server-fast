@@ -75,6 +75,7 @@ process.on('SIGINT', function() {
 
 process.on('uncaughtException', function (err) {
   console.log("Unhandled Exception, shutting down Server ...")
+  closeAllConnections();
   server.close();
   console.log("Server closed!");
   console.log(err);
