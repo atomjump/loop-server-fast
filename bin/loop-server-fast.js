@@ -75,10 +75,10 @@ process.on('SIGINT', function() {
 
 
 process.on('uncaughtException', function (err) {
-  console.log("Unhandled Exception, shutting down Server ...")
+  console.log("Unhandled Exception, shutting down server ...")
   
   server.close();
-  console.log("Server closed!");
+  console.log("http/https server closed.");
   console.log(err);
   setTimeout(function() {
     // 300ms later the process kill it self to allow a restart
