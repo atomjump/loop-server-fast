@@ -62,23 +62,38 @@ var server;				//Single global http or https server.
 
 process.on('SIGINT', function() {
    //Cleanly handle a process kill
+   //See https://pm2.io/docs/runtime/best-practices/graceful-shutdown/
    console.log("Requesting a shutdown.");
    
-   server.close();
+   server.close(function(err) {
+   		if(err) {
+   			 console.log("Error closing server: " + err);
+   			 process.exit(1);
+   		} else {
+   			console.log("http/https server closed.");
+   		}
+   });
    setTimeout(function() {
-    // 300ms later the process kill it self to allow a restart
+    // 1500ms later the process kill it self to allow a restart
     closeAllConnections();
     console.log("Clean exit.");
     process.exit(0);
-  }, 300);
+  }, 1500);
 });
 
 
 process.on('uncaughtException', function (err) {
   console.log("Unhandled Exception, shutting down server ...")
   
-  server.close();
-  console.log("http/https server closed.");
+  server.close(function(err) {
+   		if(err) {
+   			 console.log("Error closing server: " + err);
+   			 process.exit(1);
+   		} else {
+   			console.log("http/https server closed.");
+   		}
+   });
+  
   console.log(err);
   setTimeout(function() {
     // 300ms later the process kill it self to allow a restart
@@ -595,10 +610,21 @@ function httpHttpsCreateServer(options) {
 		}
 
 		server.listen(listenPort);
+		process.send('ready');		//Let pm2 know we have started succesfully
+
 		
 	} catch(err) {
 		//The server has some software or connection issue. Close all database connections
 		//so that these don't build up.
+		server.close(function(err) {
+			if(err) {
+				 console.log("Error closing server: " + err);
+				 process.exit(1);
+			} else {
+				console.log("http/https server closed.");
+			}
+	   });
+		
 		closeAllConnections();
 		setTimeout(function() {
 			//2 seconds later the process kill it self to allow a restart via pm2 (but not one which
