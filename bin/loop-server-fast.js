@@ -595,7 +595,7 @@ function httpHttpsCreateServer(options) {
 		}
 
 		server.listen(listenPort);
-		process.send('ready');		//Let pm2 know we have started succesfully
+		//TODO process.send('ready');		//Let pm2 know we have started succesfully
 
 		
 	} catch(err) {
