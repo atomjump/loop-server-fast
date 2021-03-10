@@ -154,5 +154,5 @@ npm install loop-server-fast -g -production
 One convenient line, to minimise downtime (although you will have a few seconds down):
 
 ```
-pm2 delete loop-server-fast; npm install loop-server-fast -g; cd "$(npm prefix -global)/lib/node_modules/loop-server-fast/"; pm2 start npm --name "loop-server-fast" -- start; cd ~
+pm2 stop loop-server-fast; pm2 delete loop-server-fast; npm install loop-server-fast -g; cd "$(npm prefix -global)/lib/node_modules/loop-server-fast/"; pm2 start npm --name "loop-server-fast" -- start; cd ~; pm2 save
 ```
