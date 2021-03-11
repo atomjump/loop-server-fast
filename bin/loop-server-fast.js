@@ -85,7 +85,7 @@ process.on('uncaughtException', function (err) {
     closeAllConnections();
     console.log("Clean exit.");
     process.exit(0);
-  }, 2000);
+  }, 4000);
 });
 
 
