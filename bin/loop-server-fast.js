@@ -604,7 +604,11 @@ function httpHttpsCreateServer(options) {
 	} catch(err) {
 		//The server has some software or connection issue. Close all database connections
 		//so that these don't build up.
-		server.close();		
+		console.log(err);
+		
+		if(server) {
+			server.close();	
+		}	
 		closeAllConnections();
 		setTimeout(function() {
 			//2 seconds later the process kill it self to allow a restart via pm2 (but not one which
