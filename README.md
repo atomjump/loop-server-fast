@@ -2,8 +2,8 @@
 
 # loop-server-fast
 
-A faster NodeJS reader plugin to complement the AtomJump Loop Server (see http://atomjump.org).
-This speeds up the core of the AtomJump Loop Server PHP scripts, to allow for 
+A faster NodeJS reader plugin to complement the AtomJump Messaging Server (see http://atomjump.org).
+This speeds up the core of the AtomJump Messaging Server PHP scripts, to allow for 
 a large increase in the number of simultaneous users, with the same hardware.
 
 
@@ -11,13 +11,13 @@ a large increase in the number of simultaneous users, with the same hardware.
 # Requirements
 
 * NodeJS >= 4.x
-* AtomJump Loop Server >= 1.5.5
+* AtomJump Messaging Server >= 1.5.5
 * Linux server (or any machine with NodeJS) 
 
 
 # Server Setup
 
-Follow the instructions to set up the Loop Server as a PHP script. 
+Follow the instructions to set up the Messaging Server as a PHP script. 
 
 
 Then to install the daemon:
@@ -25,8 +25,8 @@ Then to install the daemon:
 ```
 npm install pm2@latest -g
 npm install loop-server-fast -g
-npm config set loop-server-fast:configFile /path/to/your/loop-server/config/config.json
-npm config set loop-server-fast:messagesFile /path/to/your/loop-server/config/messages.json
+npm config set loop-server-fast:configFile /path/to/your/messaging-server/config/config.json
+npm config set loop-server-fast:messagesFile /path/to/your/messaging-server/config/messages.json
 ```
 
 To your Loop Server's config/config.json, add the following
@@ -88,7 +88,7 @@ Then, to your Loop Server's config/config.json, add the following
 
 (note, remove the [comments in square brackets above])
 
-Switch the NodeJS server to the Loop Server's production settings with:
+Switch the NodeJS server to the Messaging Server's production settings with:
 
 ```
 npm config set loop-server-fast:production true
