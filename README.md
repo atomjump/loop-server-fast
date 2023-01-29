@@ -1,5 +1,7 @@
 <img src="https://atomjump.com/images/logo80.png">
 
+__WARNING: this project has now moved to https://src.atomjump.com/atomjump/loop-server-fast.git__
+
 # loop-server-fast
 
 A faster NodeJS reader plugin to complement the AtomJump Messaging Server (see http://atomjump.org).
